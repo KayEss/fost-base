@@ -12,6 +12,7 @@
 #include <fost/log.hpp>
 
 #include <future>
+#include <thread>
 #include <utility>
 
 
