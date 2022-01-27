@@ -10,40 +10,17 @@
 #include <fost/crypto.hpp>
 #include <fost/ed25519.hpp>
 
-#include "naclite.h"
-
-
-namespace {
-
-
-    auto signing_pubkey(f5::buffer<const f5::byte> sk) {
-        // Derived from crypto_sign_keypair in Crypto++ tweetnacl.cpp
-        uint8_t d[64];
-        fostlib::nacl::gf p[4];
-
-        fostlib::nacl::crypto_hash(
-                d, reinterpret_cast<const uint8_t *>(sk.data()), sk.size());
-        d[0] &= 248;
-        d[31] &= 127;
-        d[31] |= 64;
-        fostlib::nacl::scalarbase(p, d);
-
-        fostlib::ed25519::secret pk;
-        fostlib::nacl::pack(reinterpret_cast<uint8_t *>(pk.data()), p);
-        return pk;
-    }
-
-
-}
+#include <crypto++/naclite.h>
 
 
 fostlib::ed25519::keypair::keypair() : keypair(crypto_bytes<32>()) {}
 
 
 fostlib::ed25519::keypair::keypair(secret sk) {
+    std::array<unsigned char, 64> pk;
+    CryptoPP::NaCl::crypto_sign_sk2pk(pk.data(), sk.data());
     std::copy(sk.begin(), sk.end(), privkey.begin());
-    auto pk = signing_pubkey(priv());
-    std::copy(pk.begin(), pk.end(), privkey.begin() + 32);
+    std::copy(pk.begin(), pk.begin() + 32, privkey.begin() + 32);
 }
 
 
@@ -62,7 +39,7 @@ std::array<f5::byte, 64> fostlib::ed25519::keypair::sign(
         f5::buffer<const f5::byte> message) const {
     std::vector<f5::byte> signature(message.size() + 64);
     uint64_t siglen{signature.size()};
-    fostlib::nacl::crypto_sign(
+    CryptoPP::NaCl::crypto_sign(
             signature.data(), &siglen, message.data(), message.size(),
             privkey.data());
     if (siglen < 64)
@@ -91,7 +68,7 @@ bool fostlib::ed25519::verify(
     /// the message and the secret (for some reason).
     std::vector<f5::byte> outmsg(msgsig.size());
     uint64_t outmsg_len{};
-    if (fostlib::nacl::crypto_sign_open(
+    if (CryptoPP::NaCl::crypto_sign_open(
                 outmsg.data(), &outmsg_len, msgsig.data(), msgsig.size(),
                 pub.data())
         == 0) {
