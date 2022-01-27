@@ -8,7 +8,6 @@ add_library(fost-crypto
         password.cpp
         rsa.cpp
         signature.cpp
-        tweetnacl.cpp
     )
 target_link_libraries(fost-crypto crypto++ fost-core)
 set_target_properties(fost-crypto PROPERTIES DEBUG_POSTFIX "-d")
