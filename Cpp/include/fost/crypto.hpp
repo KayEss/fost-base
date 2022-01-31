@@ -19,6 +19,8 @@
 // This needs to be fixed using C++17's `__has_include`
 // #include <sys/random.h>
 
+#include <span>
+
 
 namespace fostlib {
 
@@ -98,6 +100,9 @@ namespace fostlib {
             } else {
                 return *this;
             }
+        }
+        digester &operator<<(std::span<std::byte> s) {
+            return *this << const_memory_block(s.data(), s.data() + s.size());
         }
         digester &operator<<(f5::u8view);
         digester &operator<<(string const &str) {
