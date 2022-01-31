@@ -75,6 +75,7 @@ namespace fostlib {
     FOST_CRYPTO_DECLSPEC string sha1(const f5::u8view &);
     FOST_CRYPTO_DECLSPEC string sha256(const f5::u8view &);
     FOST_CRYPTO_DECLSPEC string ripemd256(const f5::u8view &);
+    FOST_CRYPTO_DECLSPEC string keccak256(const f5::u8view &);
 
     /// The type of a digester used as an argument
     using digester_fn = string (*)(const f5::u8view &);
@@ -94,8 +95,9 @@ namespace fostlib {
             if (v.size()) {
                 const unsigned char *begin = v.data();
                 return *this << const_memory_block(begin, begin + v.size());
-            } else
+            } else {
                 return *this;
+            }
         }
         digester &operator<<(f5::u8view);
         digester &operator<<(string const &str) {

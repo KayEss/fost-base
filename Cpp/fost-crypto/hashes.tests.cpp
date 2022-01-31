@@ -54,3 +54,11 @@ FSL_TEST_FUNCTION(ripemd256) {
             fostlib::ripemd256("1234----ProjectC534---/4y2krF38"),
             "508f1795d9342d12a5b9cfa4c3c181cc0d3f6abbe974001534de3b5b014ccee0");
 }
+
+
+FSL_TEST_FUNCTION(keccak256) {
+    /// From <https://www.cryptopp.com/wiki/Keccak>
+    FSL_CHECK_EQ(
+            fostlib::keccak256("Yoda said, Do or do not. There is not try."),
+            "908629918e36a3dea875b9d11f725aabf68a61d91f1a675e73c426e18d9781da");
+}
