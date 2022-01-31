@@ -101,7 +101,7 @@ namespace fostlib {
                 return *this;
             }
         }
-        digester &operator<<(std::span<std::byte> s) {
+        digester &operator<<(std::span<std::byte const> s) {
             return *this << const_memory_block(s.data(), s.data() + s.size());
         }
         digester &operator<<(f5::u8view);
