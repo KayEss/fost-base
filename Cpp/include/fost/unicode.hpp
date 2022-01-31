@@ -149,4 +149,16 @@ namespace fostlib {
 }
 
 
+inline std::ostream &operator<<(std::ostream &os, char16_t ch) {
+    return os << unsigned{ch};
+}
+inline std::ostream &operator<<(std::ostream &os, char16_t *str) {
+    f5::u16string s{str};
+    return os << fostlib::coerce<f5::u8string>(f5::u16view{s});
+}
+inline std::ostream &operator<<(std::ostream &os, char32_t ch) {
+    return os << unsigned{ch};
+}
+
+
 #endif // FOST_UNICODE_HPP
