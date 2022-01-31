@@ -29,7 +29,7 @@ namespace fostlib {
         performance(const module &, jcursor, int64_t value = 0);
         /// Construct a performance counter with extended path
         template<typename... Ss>
-        performance(const module &m, const Ss &... ss)
+        performance(const module &m, const Ss &...ss)
         : performance(m, jcursor(ss...)) {}
         /// Make movable
         performance(performance &&p);

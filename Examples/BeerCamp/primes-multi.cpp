@@ -57,8 +57,7 @@ namespace {
             }
             // Move to the next seq which has a prime sum
             unsigned int next() {
-                do
-                    shift();
+                do shift();
                 while (!is_prime(m_sum));
                 return m_sum;
             }

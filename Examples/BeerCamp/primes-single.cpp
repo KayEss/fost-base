@@ -48,8 +48,7 @@ namespace {
         }
         // Move to the next seq which has a prime sum
         prime_sequence &operator++() {
-            do
-                shift();
+            do shift();
             while (!is_prime(sum()));
             return *this;
         }

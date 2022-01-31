@@ -184,23 +184,24 @@ fostlib::nullable<fostlib::jwt::token> fostlib::jwt::token::load(
                 return fostlib::null;
             }
         } else if (header["alg"] == rs256) {
-            // expect lamda function must return publickey component as `{e}0x00{n}`
+            // expect lamda function must return publickey component as
+            // `{e}0x00{n}`
             auto public_key = lambda(header, payload);
             std::string modulus_n;
-            std::string exponent_e;            
-            for (std::vector<f5::byte>::iterator it = public_key.begin(); it != public_key.end(); ++it) {
+            std::string exponent_e;
+            for (std::vector<f5::byte>::iterator it = public_key.begin();
+                 it != public_key.end(); ++it) {
                 if (*it == f5::byte(0x00)) {
                     exponent_e = std::string(public_key.begin(), it);
                     modulus_n = std::string(it + 1, public_key.end());
                     break;
                 }
-            }            
+            }
             if (not fostlib::rsa::PKCS1v15_SHA256::validate(
-                    std::string(parts[0].begin(), parts[0].end()) + "." + std::string(parts[1].begin(), parts[1].end()), 
-                    std::string(parts[2].begin(), parts[2].end()), 
-                    modulus_n, 
-                    exponent_e
-                )) {
+                        std::string(parts[0].begin(), parts[0].end()) + "."
+                                + std::string(parts[1].begin(), parts[1].end()),
+                        std::string(parts[2].begin(), parts[2].end()),
+                        modulus_n, exponent_e)) {
                 log::warning(c_fost)("", "PKCS1v15_SHA256 verification failed");
                 return fostlib::null;
             }

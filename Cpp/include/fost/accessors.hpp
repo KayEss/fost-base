@@ -26,7 +26,7 @@ namespace fostlib {
 
       public:
         template<typename... A>
-        explicit accessors(A &&... args) : m_v(std::forward<A>(args)...) {}
+        explicit accessors(A &&...args) : m_v(std::forward<A>(args)...) {}
 
         const V &operator()() const { return m_v; }
         void operator()(const V &v) { m_v = v; }
@@ -38,7 +38,7 @@ namespace fostlib {
 
       public:
         template<typename... A>
-        explicit accessors(A &&... args) : m_v(std::forward<A>(args)...) {}
+        explicit accessors(A &&...args) : m_v(std::forward<A>(args)...) {}
 
         const V &operator()() const { return m_v; }
         V &operator()() { return m_v; }

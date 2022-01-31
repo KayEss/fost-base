@@ -36,13 +36,13 @@ namespace fostlib {
     }
     /// Allow for any length
     template<typename C1, typename C2, typename... C>
-    inline json &push_back(json &j, jcursor jc, C1 &&p1, C2 &&p2, C &&... p) {
+    inline json &push_back(json &j, jcursor jc, C1 &&p1, C2 &&p2, C &&...p) {
         return push_back(
                 j, jc /= std::forward<C1>(p1), std::forward<C2>(p2),
                 std::forward<C>(p)...);
     }
     template<typename C0, typename C1, typename C2, typename... C>
-    inline json &push_back(json &j, C0 &&jc, C1 &&p1, C2 &&p2, C &&... p) {
+    inline json &push_back(json &j, C0 &&jc, C1 &&p1, C2 &&p2, C &&...p) {
         return push_back(
                 j, jcursor{std::forward<C0>(jc)}, std::forward<C1>(p1),
                 std::forward<C2>(p2), std::forward<C>(p)...);

@@ -260,13 +260,13 @@ namespace fostlib {
          */
         template<typename... Fs>
         struct visitor_overload : std::remove_reference_t<Fs>... {
-            visitor_overload(Fs &&... fs)
+            visitor_overload(Fs &&...fs)
             : std::remove_reference_t<Fs>{std::forward<Fs>(fs)}... {}
             using std::remove_reference_t<Fs>::operator()...;
         };
 
         template<typename... T>
-        decltype(auto) apply_visitor(T &&... t) const {
+        decltype(auto) apply_visitor(T &&...t) const {
             return std::visit(
                     visitor_overload<T...>(std::forward<T>(t)...), m_element);
         }
@@ -326,7 +326,7 @@ namespace fostlib {
         /// We don't want any code to use the mutating visitor, except
         /// in contexts we know it to be safe, i.e. here and its friends
         template<typename... T>
-        decltype(auto) apply_mutating_visitor(T &&... t) {
+        decltype(auto) apply_mutating_visitor(T &&...t) {
             return std::visit(
                     visitor_overload<T...>(std::forward<T>(t)...), m_element);
         }

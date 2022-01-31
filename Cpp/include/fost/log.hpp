@@ -58,7 +58,7 @@ namespace fostlib {
                     f5::u8string name,
                     json::array_t array,
                     const A &a,
-                    J &&... j) {
+                    J &&...j) {
             push_back(array, fostlib::coerce<fostlib::json>(a));
             log(m, level, name, std::move(array), std::forward<J>(j)...);
         }
@@ -175,7 +175,7 @@ namespace fostlib {
 
                 /// Log the message at the requested key path
                 template<typename P1, typename P2, typename... P>
-                log_object &operator()(const P1 &p1, P2 &&p2, P &&... p) {
+                log_object &operator()(const P1 &p1, P2 &&p2, P &&...p) {
                     insert(log_message[p1], std::forward<P2>(p2),
                            std::forward<P>(p)...);
                     return *this;
@@ -202,7 +202,7 @@ namespace fostlib {
                     fostlib::coerce<fostlib::json>(std::forward<J>(j))); \
         } \
         template<typename F, typename... J> \
-        void operator()(const fostlib::module &m, F &&f, J &&... j) const { \
+        void operator()(const fostlib::module &m, F &&f, J &&...j) const { \
             fostlib::log::log( \
                     m, level(), name(), fostlib::json::array_t(), \
                     std::forward<F>(f), std::forward<J>(j)...); \

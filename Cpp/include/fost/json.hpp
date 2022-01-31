@@ -75,7 +75,7 @@ namespace fostlib {
 
         /// Variadic jcursor constructor
         template<typename A1, typename A2, typename... As>
-        explicit jcursor(A1 &&a1, A2 &&a2, As &&... a)
+        explicit jcursor(A1 &&a1, A2 &&a2, As &&...a)
         : jcursor(std::forward<A1>(a1)) {
             append(std::forward<A2>(a2), std::forward<As>(a)...);
         }
@@ -215,7 +215,7 @@ namespace fostlib {
             (*this) /= jcursor{std::forward<A1>(a1)};
         }
         template<typename A1, typename... As>
-        void append(A1 &&a1, As &&... a) {
+        void append(A1 &&a1, As &&...a) {
             (*this) /= jcursor{std::forward<A1>(a1)};
             append(std::forward<As>(a)...);
         }
