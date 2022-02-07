@@ -70,7 +70,7 @@ namespace fostlib {
             mint &claim(f5::u8view url, const json &value);
 
             /// Return the token
-            std::string token(f5::buffer<const f5::byte> key);
+            std::string token(f5::buffer<const f5::byte> key) const;
 
             /// Return the current payload
             const json &payload() const { return m_payload; }

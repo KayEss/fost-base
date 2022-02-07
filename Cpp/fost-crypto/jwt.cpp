@@ -82,7 +82,7 @@ fostlib::jwt::mint &fostlib::jwt::mint::claim(f5::u8view u, const json &j) {
 }
 
 
-std::string fostlib::jwt::mint::token(f5::buffer<const f5::byte> key) {
+std::string fostlib::jwt::mint::token(f5::buffer<const f5::byte> key) const {
     std::string str_header, str_payload;
     json::unparse(str_header, header, false);
     json::unparse(str_payload, m_payload, false);
