@@ -81,12 +81,16 @@ namespace fostlib {
         : m_element(std::make_shared<object_t>(std::move(o))) {}
 
         template<typename T>
-        requires requires(T t, json j) { {j = t}; }
+            requires requires(T t, json j) {
+                { j = t };
+            }
         json(const nullable<T> &t) : m_element() {
             if (t) *this = t.value();
         }
         template<typename T>
-        requires requires(T t, element_t j) { {j = std::move(t)}; }
+            requires requires(T t, element_t j) {
+                { j = std::move(t) };
+            }
         json(nullable<T> &&t) : m_element() {
             if (t) m_element = std::move(*t);
         }

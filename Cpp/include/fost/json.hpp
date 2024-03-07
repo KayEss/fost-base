@@ -277,7 +277,7 @@ namespace fostlib {
 
     /// Allow us to coerce to any integral type from JSON
     template<typename T>
-    requires std::is_integral_v<T>
+        requires std::is_integral_v<T>
     struct coercer<T, fostlib::json> {
         T coerce(const fostlib::json &j, felspar::source_location loc) {
             try {

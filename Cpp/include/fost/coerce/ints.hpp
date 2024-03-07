@@ -17,9 +17,9 @@ namespace fostlib {
      * ## Coerce between integral types
      */
     template<typename T, typename F>
-    requires(not is_brace_constructible<T, F>)
-            and std::is_integral_v<T>
-                    and std::is_integral_v<F> struct coercer<T, F> {
+        requires(not is_brace_constructible<T, F>)
+            and std::is_integral_v<T> and std::is_integral_v<F>
+    struct coercer<T, F> {
         using limits_T = std::numeric_limits<T>;
         using limits_F = std::numeric_limits<F>;
 

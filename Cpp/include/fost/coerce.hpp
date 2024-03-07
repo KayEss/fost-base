@@ -17,7 +17,7 @@ namespace fostlib {
     /// construction.
     template<typename T, typename F>
     concept is_brace_constructible = requires(F const f) {
-        {T{f}};
+        { T{f} };
     };
 
     /// ## Coercion helper
@@ -32,7 +32,10 @@ namespace fostlib {
     /// source file location or not.
     template<typename T, typename F>
     concept coercion_wants_source = requires(coercer<T, F, void> c) {
-        {c.coerce(std::declval<F>(), std::declval<felspar::source_location>())};
+        {
+            c.coerce(
+                    std::declval<F>(), std::declval<felspar::source_location>())
+        };
     };
 
 
@@ -52,7 +55,7 @@ namespace fostlib {
 
     /// Coercion for brace constructible types
     template<typename T, typename F>
-    requires is_brace_constructible<T, F>
+        requires is_brace_constructible<T, F>
     struct coercer<T, F, void> {
         T coerce(
                 F const &f,

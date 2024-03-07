@@ -30,7 +30,9 @@ namespace fostlib {
 /// Allow nullable values to be printed
 namespace std {
     template<typename C, typename T, typename Y>
-    requires requires(Y const t, basic_ostream<C, T> os) { {os << t}; }
+        requires requires(Y const t, basic_ostream<C, T> os) {
+            { os << t };
+        }
     auto &operator<<(basic_ostream<C, T> &o, const optional<Y> &y) {
         return y ? o << *y : o << std::nullopt;
     }

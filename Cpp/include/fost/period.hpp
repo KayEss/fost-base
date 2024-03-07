@@ -66,9 +66,9 @@ namespace std {
 
 
     template<typename V>
-    requires requires(fostlib::ostream &o, fostlib::period<V> t) {
-        {o << t.value()};
-    }
+        requires requires(fostlib::ostream &o, fostlib::period<V> t) {
+            { o << t.value() };
+        }
     inline fostlib::ostream &
             operator<<(fostlib::ostream &o, const fostlib::period<V> &p) {
         return o << p.start() << "->" << p.end() << ':' << p.value();
