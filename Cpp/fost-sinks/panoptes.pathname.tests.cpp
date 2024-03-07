@@ -1,13 +1,3 @@
-/**
-    Copyright 2016-2020, Red Anchor Trading Co. Ltd.
-
-    Copyright 2012-2015, Proteus Technologies Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
-*/
-
-
 #include <fost/sinks>
 #include <fost/test>
 
@@ -24,18 +14,18 @@ FSL_TEST_SUITE(archive_pathname);
 FSL_TEST_FUNCTION(filename) {
     fostlib::log::detail::archive_pathname filename,
             module(c_fost_sinks_test_f);
-    fostlib::timestamp w(2011, 8, 15, 14, 54);
+    auto const w = fostlib::timestamp(2011, 8, 15, 14, 54);
 
     FSL_CHECK_EQ(
             filename(w),
-            fostlib::coerce<fostlib::fs::path>(
+            fostlib::coerce<std::filesystem::path>(
                     fostlib::c_log_sink_file_root.value()
                     + "/2011-08/15/-unnamed-"
                       "/2011-08-15T145400Z.jsonl"));
 
     FSL_CHECK_EQ(
             module(w),
-            fostlib::coerce<fostlib::fs::path>(
+            fostlib::coerce<std::filesystem::path>(
                     fostlib::c_log_sink_file_root.value()
                     + "/2011-08/15/fost/sinks/test/" __FILE__
                       "/2011-08-15T145400Z.jsonl"));

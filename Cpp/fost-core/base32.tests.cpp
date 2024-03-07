@@ -1,17 +1,9 @@
-/**
-    Copyright 2018-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include <fost/base32>
 #include <fost/unicode>
 #include <fost/test>
 
 
-using namespace f5::literals;
+using namespace felspar::literals;
 
 
 FSL_TEST_SUITE(base32);
@@ -25,7 +17,7 @@ FSL_TEST_FUNCTION(bytes_0) {
 
 
 FSL_TEST_FUNCTION(bytes_1) {
-    const std::array<f5::byte, 1> a{{f5::byte(0xff)}};
+    const std::array<felspar::byte, 1> a{{felspar::byte(0xff)}};
     FSL_CHECK_EQ(fostlib::coerce<fostlib::base32_string>(a), "74======");
     const auto dec = fostlib::detail::decode_b32_5bytes(
             fostlib::base32_alphabet, "74======"_l);
@@ -35,7 +27,8 @@ FSL_TEST_FUNCTION(bytes_1) {
 
 
 FSL_TEST_FUNCTION(bytes_2) {
-    const std::array<f5::byte, 2> a{{f5::byte(0xff), f5::byte(0xff)}};
+    const std::array<felspar::byte, 2> a{
+            {felspar::byte(0xff), felspar::byte(0xff)}};
     FSL_CHECK_EQ(fostlib::coerce<fostlib::base32_string>(a), "777Q====");
     const auto dec = fostlib::detail::decode_b32_5bytes(
             fostlib::base32_alphabet, "777Q===="_l);
@@ -46,8 +39,8 @@ FSL_TEST_FUNCTION(bytes_2) {
 
 
 FSL_TEST_FUNCTION(bytes_3) {
-    const std::array<f5::byte, 3> a{
-            {f5::byte(0xff), f5::byte(0xff), f5::byte(0xff)}};
+    const std::array<felspar::byte, 3> a{
+            {felspar::byte(0xff), felspar::byte(0xff), felspar::byte(0xff)}};
     FSL_CHECK_EQ(fostlib::coerce<fostlib::base32_string>(a), "77776===");
     const auto dec = fostlib::detail::decode_b32_5bytes(
             fostlib::base32_alphabet, "77776==="_l);
@@ -59,8 +52,9 @@ FSL_TEST_FUNCTION(bytes_3) {
 
 
 FSL_TEST_FUNCTION(bytes_4) {
-    const std::array<f5::byte, 4> a{
-            {f5::byte(0xff), f5::byte(0xff), f5::byte(0xff), f5::byte(0xff)}};
+    const std::array<felspar::byte, 4> a{
+            {felspar::byte(0xff), felspar::byte(0xff), felspar::byte(0xff),
+             felspar::byte(0xff)}};
     FSL_CHECK_EQ(fostlib::coerce<fostlib::base32_string>(a), "777777Y=");
     const auto dec = fostlib::detail::decode_b32_5bytes(
             fostlib::base32_alphabet, "777777Y="_l);
@@ -73,9 +67,9 @@ FSL_TEST_FUNCTION(bytes_4) {
 
 
 FSL_TEST_FUNCTION(bytes_5) {
-    const std::array<f5::byte, 5> a{
-            {f5::byte(0xff), f5::byte(0xff), f5::byte(0xff), f5::byte(0xff),
-             f5::byte(0xff)}};
+    const std::array<felspar::byte, 5> a{
+            {felspar::byte(0xff), felspar::byte(0xff), felspar::byte(0xff),
+             felspar::byte(0xff), felspar::byte(0xff)}};
     FSL_CHECK_EQ(fostlib::coerce<fostlib::base32_string>(a), "77777777");
     const auto dec = fostlib::detail::decode_b32_5bytes(
             fostlib::base32_alphabet, "77777777"_l);
@@ -89,7 +83,7 @@ FSL_TEST_FUNCTION(bytes_5) {
 
 
 FSL_TEST_FUNCTION(bytes_long) {
-    f5::lstring const foobar = "foobar";
+    felspar::lstring const foobar = "foobar";
     const auto b32hex = fostlib::coerce<fostlib::base32hex_string>(foobar);
     FSL_CHECK_EQ(b32hex, "CPNMUOJ1E8======");
     const auto vec = fostlib::coerce<std::vector<unsigned char>>(b32hex);

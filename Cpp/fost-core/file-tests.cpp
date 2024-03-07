@@ -1,11 +1,3 @@
-/**
-    Copyright 2013-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core-test.hpp"
 #include <fost/file>
 
@@ -30,16 +22,16 @@ FSL_TEST_FUNCTION(join_paths) {
 
 
 FSL_TEST_FUNCTION(unique_filename) {
-    fostlib::fs::path path;
+    std::filesystem::path path;
     FSL_CHECK_NOTHROW(path = fostlib::unique_filename());
-    FSL_CHECK(!fostlib::fs::exists(path));
+    FSL_CHECK(not std::filesystem::exists(path));
 }
 
 
 FSL_TEST_FUNCTION(save_file) {
-    const fostlib::fs::path filename = "/nowhere/not-allowed.txt";
+    std::filesystem::path const filename = "/nowhere/not-allowed.txt";
     FSL_CHECK_EXCEPTION(
             fostlib::utf::save_file(filename, "some text"),
             fostlib::exceptions::file_error &);
-    FSL_CHECK(not fostlib::fs::exists(filename));
+    FSL_CHECK(not std::filesystem::exists(filename));
 }

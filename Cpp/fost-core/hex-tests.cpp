@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core-test.hpp"
 #include <fost/string>
 
@@ -27,7 +19,7 @@ FSL_TEST_FUNCTION(constructors) {
 
 
 FSL_TEST_FUNCTION(raw_array) {
-    boost::array<unsigned char, 9> values;
+    std::array<unsigned char, 9> values;
     for (std::size_t p = 0; p != 9; ++p) values[p] = p + 1;
     FSL_CHECK_EQ(coerce<hex_string>(values), hex_string("010203040506070809"));
 }

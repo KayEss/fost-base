@@ -1,13 +1,5 @@
-/**
-    Copyright 2009-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
-#include <fost/detail/hex.hpp>
+#include <fost/hex.hpp>
 #include <fost/insert.hpp>
 #include <fost/unicode.hpp>
 
@@ -17,7 +9,7 @@
 
 
 namespace {
-    void check_range(fostlib::utf32 minimum, const fostlib::string &s) {
+    void check_range(char32_t minimum, const fostlib::string &s) {
         std::size_t p = 0;
         try {
             for (auto c(s.begin()); c != s.end(); ++c, ++p) {
@@ -45,11 +37,11 @@ namespace {
 
 
 void fostlib::ascii_string_tag::do_encode(fostlib::nliteral, fostlib::string &) {
-    throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__);
+    throw fostlib::exceptions::not_implemented{};
 }
 void fostlib::ascii_string_tag::do_encode(
         const fostlib::string &, fostlib::string &) {
-    throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__);
+    throw fostlib::exceptions::not_implemented{};
 }
 void fostlib::ascii_string_tag::check_encoded(const fostlib::string &s) {
     check_range(1, s);
@@ -70,12 +62,12 @@ fostlib::ascii_string
 
 fostlib::string fostlib::coercer<fostlib::string, fostlib::ascii_string>::coerce(
         const fostlib::ascii_string &s) {
-    return string(s.underlying());
+    return static_cast<felspar::u8string>(s);
 }
 
 fostlib::json fostlib::coercer<fostlib::json, fostlib::ascii_string>::coerce(
         const fostlib::ascii_string &s) {
-    return json{string{s}};
+    return json{static_cast<felspar::u8string>(s)};
 }
 
 
@@ -86,11 +78,11 @@ fostlib::json fostlib::coercer<fostlib::json, fostlib::ascii_string>::coerce(
 
 void fostlib::ascii_printable_string_tag::do_encode(
         fostlib::nliteral, fostlib::string &) {
-    throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__);
+    throw fostlib::exceptions::not_implemented{};
 }
 void fostlib::ascii_printable_string_tag::do_encode(
         const fostlib::string &, fostlib::string &) {
-    throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__);
+    throw fostlib::exceptions::not_implemented{};
 }
 void fostlib::ascii_printable_string_tag::check_encoded(
         const fostlib::string &s) {
@@ -115,5 +107,5 @@ fostlib::ascii_printable_string
 fostlib::string
         fostlib::coercer<fostlib::string, fostlib::ascii_printable_string>::
                 coerce(const fostlib::ascii_printable_string &s) {
-    return string{s};
+    return static_cast<felspar::u8string>(s);
 }

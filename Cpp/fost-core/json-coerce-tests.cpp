@@ -1,14 +1,7 @@
-/**
-    Copyright 2012-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core-test.hpp"
 
-using namespace f5::literals;
+
+using namespace felspar::literals;
 
 
 FSL_TEST_SUITE(json_coerce);
@@ -59,4 +52,38 @@ FSL_TEST_FUNCTION(array) {
     FSL_CHECK_EQ(
             fostlib::json(fostlib::json::array_t()),
             fostlib::coerce<fostlib::json>(fostlib::json::array_t()));
+}
+
+
+FSL_TEST_FUNCTION(optional) {
+    FSL_CHECK_EQ(
+            fostlib::json(),
+            fostlib::coerce<fostlib::json>(std::optional<int>{}));
+    FSL_CHECK_EQ(
+            fostlib::json(42),
+            fostlib::coerce<fostlib::json>(std::optional<int>{42}));
+    FSL_CHECK_EQ(
+            std::optional<int>{},
+            fostlib::coerce<std::optional<int>>(fostlib::json()));
+    FSL_CHECK_EQ(
+            std::optional<int>{42},
+            fostlib::coerce<std::optional<int>>(fostlib::json(42)));
+}
+
+
+FSL_TEST_FUNCTION(holding_pen) {
+    FSL_CHECK_EQ(
+            fostlib::json(),
+            fostlib::coerce<fostlib::json>(felspar::memory::holding_pen<int>{}));
+    FSL_CHECK_EQ(
+            fostlib::json(42),
+            fostlib::coerce<fostlib::json>(
+                    felspar::memory::holding_pen<int>{42}));
+    FSL_CHECK_EQ(
+            felspar::memory::holding_pen<int>{},
+            fostlib::coerce<felspar::memory::holding_pen<int>>(fostlib::json()));
+    FSL_CHECK_EQ(
+            felspar::memory::holding_pen<int>{42},
+            fostlib::coerce<felspar::memory::holding_pen<int>>(
+                    fostlib::json(42)));
 }

@@ -1,11 +1,3 @@
-/**
-    Copyright 2001-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_EXCEPTION_NULL_HPP
 #define FOST_EXCEPTION_NULL_HPP
 #pragma once
@@ -22,12 +14,18 @@ namespace fostlib {
 
         class FOST_CORE_DECLSPEC null : public exception {
           public:
-            null() noexcept;
-            null(const string &message) noexcept;
-            null(const string &message, const string &info) noexcept;
+            null(felspar::source_location =
+                         felspar::source_location::current()) noexcept;
+            null(const string &message,
+                 felspar::source_location =
+                         felspar::source_location::current()) noexcept;
+            null(const string &message,
+                 const string &info,
+                 felspar::source_location =
+                         felspar::source_location::current()) noexcept;
 
           protected:
-            const wchar_t *const message() const noexcept;
+            felspar::u8view message() const noexcept;
         };
 
 

@@ -1,11 +1,3 @@
-/**
-    Copyright 1997-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/counter.hpp>
 #include <fost/thread.hpp>
@@ -112,7 +104,7 @@ fostlib::worker::context::context() : m_terminate(false) {}
 
 
 void fostlib::worker::context::execute(std::shared_ptr<context> self) {
-    fostlib::exceptions::structured_handler handler;
+    // fostlib::exceptions::structured_handler handler;
 #ifdef FOST_OS_WINDOWS
     com_hr(::CoInitializeEx(NULL, COINIT_APARTMENTTHREADED),
            L"CoInitializeEx at start of fostlib::worker thread");
@@ -230,8 +222,7 @@ void fostlib::detail::future_result<void>::wait() {
 #endif
 
 
-void fostlib::detail::future_result<void>::wait(const timediff &td) {
-    const std::chrono::nanoseconds t{td.total_nanoseconds()};
+void fostlib::detail::future_result<void>::wait(std::chrono::nanoseconds t) {
     std::unique_lock<std::mutex> lock(m_mutex);
     if (!this->completed()) {
         m_has_result.wait_for(lock, t, [this]() { return m_completed; });

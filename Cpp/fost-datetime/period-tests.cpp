@@ -1,11 +1,3 @@
-/**
-    Copyright 2010-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include <fost/datetime>
 #include <fost/test>
 
@@ -18,7 +10,7 @@ FSL_TEST_FUNCTION(constructors) {
     fostlib::test::default_copy_constructable<fostlib::period<int>>();
     fostlib::test::default_copy_constructable<fostlib::period<fostlib::string>>();
     fostlib::period<void> p1(
-            fostlib::timestamp(2010, 1, 1), fostlib::timestamp::now());
+            fostlib::timestamp(2010, 1, 1), std::chrono::system_clock::now());
 }
 
 

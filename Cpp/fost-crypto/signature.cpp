@@ -1,11 +1,3 @@
-/**
-    Copyright 1999-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-crypto.hpp"
 #include <fost/string>
 #include <fost/crypto.hpp>
@@ -26,7 +18,7 @@ using namespace fostlib;
 
 
 string fostlib::sha1_hmac(const string &key, const string &data) {
-    BOOST_STATIC_ASSERT(sizeof(std::size_t) >= sizeof(int));
+    static_assert(sizeof(std::size_t) >= sizeof(int));
     utf8_string key_utf8(coerce<utf8_string>(key)),
             data_utf8(coerce<utf8_string>(data));
 
@@ -79,7 +71,7 @@ struct hmac_impl : public fostlib::hmac::impl {
 };
 
 
-fostlib::hmac::hmac(digester_fn hash, f5::buffer<const f5::byte> key)
+fostlib::hmac::hmac(digester_fn hash, felspar::buffer<const felspar::byte> key)
 : m_implementation(nullptr) {
     if (hash == fostlib::sha1)
         m_implementation = std::make_unique<hmac_impl<CryptoPP::SHA1>>();
@@ -89,7 +81,6 @@ fostlib::hmac::hmac(digester_fn hash, f5::buffer<const f5::byte> key)
         m_implementation = std::make_unique<hmac_impl<CryptoPP::Weak::MD5>>();
     else
         throw exceptions::not_implemented(
-                __PRETTY_FUNCTION__,
                 "-- Only sha1, sha256 and md5 are supported");
     m_implementation->set_key(key.data(), key.size());
 }
@@ -122,12 +113,10 @@ fostlib::hmac &fostlib::hmac::operator<<(const const_memory_block &p) {
         m_implementation->update(begin, length);
     return *this;
 }
-fostlib::hmac &fostlib::hmac::operator<<(f5::u8view d8) {
+fostlib::hmac &fostlib::hmac::operator<<(felspar::u8view d8) {
     return (*this) << const_memory_block(d8.data(), d8.data() + d8.bytes());
 }
 
-fostlib::hmac &fostlib::hmac::operator<<(const fostlib::fs::path &) {
-    throw fostlib::exceptions::not_implemented(
-            "fostlib::hmac::operator << ( const fostlib::fs::path "
-            "&filename )");
+fostlib::hmac &fostlib::hmac::operator<<(std::filesystem::path const &) {
+    throw fostlib::exceptions::not_implemented{};
 }

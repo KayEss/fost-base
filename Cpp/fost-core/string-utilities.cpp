@@ -1,11 +1,3 @@
-/**
-    Copyright 1999-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/detail/utility.hpp>
 #include <fost/detail/coerce.hpp>
@@ -71,7 +63,8 @@ namespace {
     }
 
     template<typename S>
-    std::pair<S, nullable<S>> ipartition(const S &text, f5::u8view u8bound) {
+    std::pair<S, nullable<S>>
+            ipartition(const S &text, felspar::u8view u8bound) {
         // TODO We'll want to get rid of this allocation
         std::string bound{u8bound};
         S first;
@@ -101,13 +94,14 @@ string fostlib::guid() {
 }
 
 
-nullable<f5::u8view> fostlib::trim(f5::u8view text) {
+nullable<felspar::u8view> fostlib::trim(felspar::u8view text) {
     return ::utrim(text, whitespace_code_point);
 }
-nullable<f5::u8view> fostlib::trim(f5::u8view text, f5::u8view chars) {
+nullable<felspar::u8view>
+        fostlib::trim(felspar::u8view text, felspar::u8view chars) {
     return ::utrim(text, chars);
 }
-nullable<f5::u8view> fostlib::trim(nullable<f5::u8view> text) {
+nullable<felspar::u8view> fostlib::trim(nullable<felspar::u8view> text) {
     if (not text)
         return null;
     else
@@ -117,8 +111,8 @@ nullable<f5::u8view> fostlib::trim(nullable<f5::u8view> text) {
 
 fostlib::utf8_string fostlib::replace_all(
         const fostlib::utf8_string &text,
-        f5::u8view findThis_u8,
-        const fostlib::nullable<f5::u8view> &replaceWith) {
+        felspar::u8view findThis_u8,
+        const fostlib::nullable<felspar::u8view> &replaceWith) {
     // TODO Get rid of this allocation. It's needed to support the find
     // calls. Probably this can be replaced with a std::string_view in C++17
     std::string findThis{findThis_u8};
@@ -143,8 +137,8 @@ fostlib::utf8_string fostlib::replace_all(
 
 fostlib::string fostlib::replace_all(
         const fostlib::string &text,
-        f5::u8view findThis,
-        const fostlib::nullable<f5::u8view> &replaceWith) {
+        felspar::u8view findThis,
+        const fostlib::nullable<felspar::u8view> &replaceWith) {
     fostlib::string ret = text;
     if (not replaceWith) {
         for (fostlib::string::size_type p(ret.find(findThis));
@@ -162,9 +156,9 @@ fostlib::string fostlib::replace_all(
     return ret;
 }
 fostlib::nullable<fostlib::string> fostlib::replace_all(
-        const fostlib::nullable<f5::u8view> &text,
-        f5::u8view findThis,
-        const fostlib::nullable<f5::u8view> &replaceWith) {
+        const fostlib::nullable<felspar::u8view> &text,
+        felspar::u8view findThis,
+        const fostlib::nullable<felspar::u8view> &replaceWith) {
     if (not text)
         return null;
     else
@@ -173,14 +167,16 @@ fostlib::nullable<fostlib::string> fostlib::replace_all(
 
 
 std::pair<fostlib::utf8_string, nullable<fostlib::utf8_string>>
-        fostlib::partition(const fostlib::utf8_string &text, f5::u8view bound) {
+        fostlib::partition(
+                const fostlib::utf8_string &text, felspar::u8view bound) {
     return ipartition(text, bound);
 }
 
 
 std::pair<fostlib::utf8_string, nullable<fostlib::utf8_string>>
         fostlib::partition(
-                const nullable<fostlib::utf8_string> &text, f5::u8view bound) {
+                const nullable<fostlib::utf8_string> &text,
+                felspar::u8view bound) {
     if (not text)
         return std::make_pair(fostlib::utf8_string(), null);
     else
@@ -219,7 +215,7 @@ std::pair<fostlib::utf8_string, nullable<fostlib::utf8_string>>
 
 
 std::pair<fostlib::string, nullable<fostlib::string>>
-        fostlib::partition(const fostlib::string &text, f5::u8view bound) {
+        fostlib::partition(const fostlib::string &text, felspar::u8view bound) {
     fostlib::string first;
     nullable<fostlib::string> second;
 
@@ -237,7 +233,7 @@ std::pair<fostlib::string, nullable<fostlib::string>>
 
 
 std::pair<fostlib::string, nullable<fostlib::string>> fostlib::partition(
-        const nullable<fostlib::string> &text, f5::u8view bound) {
+        const nullable<fostlib::string> &text, felspar::u8view bound) {
     if (not text)
         return std::make_pair(fostlib::string(), null);
     else
@@ -286,18 +282,19 @@ split_type
 
 
 nullable<string> fostlib::concat(
-        const nullable<f5::u8view> &left,
-        f5::u8view mid,
-        const nullable<f5::u8view> &right) {
+        const nullable<felspar::u8view> &left,
+        felspar::u8view mid,
+        const nullable<felspar::u8view> &right) {
     if (not left)
         return right;
     else if (not right)
         return left;
     else
-        return f5::u8view{left.value() + mid} + right.value();
+        return felspar::u8view{left.value() + mid} + right.value();
 }
 nullable<string> fostlib::concat(
-        const nullable<f5::u8view> &left, const nullable<f5::u8view> &right) {
+        const nullable<felspar::u8view> &left,
+        const nullable<felspar::u8view> &right) {
     if (not left && not right)
         return null;
     else if (not left && right)
@@ -309,8 +306,8 @@ nullable<string> fostlib::concat(
 }
 
 
-std::pair<string, nullable<string>>
-        fostlib::crack(f5::u8view text, f5::u8view open, f5::u8view close) {
+std::pair<string, nullable<string>> fostlib::crack(
+        felspar::u8view text, felspar::u8view open, felspar::u8view close) {
     string nut = trim(string(text)).value_or(string());
     string::size_type spos = nut.find(open);
     if (spos == string::npos)

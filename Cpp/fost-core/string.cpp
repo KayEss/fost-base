@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 
 
@@ -16,23 +8,22 @@ std::string fostlib::transitional_stringify(fostlib::wliteral s) {
     std::string r;
     while (s != nullptr && *s) {
         char32_t cp;
-        if (f5::cord::is_surrogate(*s)) {
+        if (felspar::cord::is_surrogate(*s)) {
             char16_t const s1 = *s++;
             if (not *s) {
-                throw fostlib::exceptions::not_implemented(
-                        __PRETTY_FUNCTION__, "Truncated surrogate pair");
+                throw fostlib::exceptions::not_implemented{
+                        "Truncated surrogate pair"};
             }
             char16_t const s2 = *s++;
-            if (not f5::cord::is_surrogate(s2)) {
-                throw fostlib::exceptions::not_implemented(
-                        __PRETTY_FUNCTION__,
-                        "Second surrogate isn't a valid surrogate");
+            if (not felspar::cord::is_surrogate(s2)) {
+                throw fostlib::exceptions::not_implemented{
+                        "Second surrogate isn't a valid surrogate"};
             }
-            cp = f5::cord::u16decode(s1, s2);
+            cp = felspar::cord::u16decode(s1, s2);
         } else {
             cp = *s++;
         }
-        const auto encoded = f5::cord::u8encode(cp);
+        const auto encoded = felspar::cord::u8encode(cp);
         r.append(encoded.second.data(), encoded.first);
     }
     return r;
@@ -45,24 +36,24 @@ std::string fostlib::transitional_stringify(fostlib::wliteral s) {
 
 
 fostlib::string::string(const string &s, size_type b, size_type c)
-: f5::u8string{s.substr(b, c)} {}
+: felspar::u8string{s.substr(b, c)} {}
 fostlib::string::string(size_type l, char32_t c)
-: f5::u8string{[](size_type l, char32_t c) {
-      const auto encoded = f5::cord::u8encode(c);
+: felspar::u8string{[](size_type l, char32_t c) {
+      const auto encoded = felspar::cord::u8encode(c);
       std::string r;
       r.reserve(encoded.first * l);
       while (l--) { r.append(encoded.second.data(), encoded.first); }
-      return f5::u8string{std::move(r)};
+      return felspar::u8string{std::move(r)};
   }(l, c)} {}
 
 
 fostlib::string fostlib::string::operator+(char32_t c) const {
-    auto const encoded = f5::cord::u8encode(c);
+    auto const encoded = felspar::cord::u8encode(c);
     std::string r;
     r.reserve(bytes() + encoded.first);
     r.append(memory().begin(), memory().end());
     r.append(encoded.second.data(), encoded.first);
-    return f5::u8string{std::move(r)};
+    return felspar::u8string{std::move(r)};
 }
 
 
@@ -85,7 +76,7 @@ char32_t fostlib::string::at(std::size_t p) const {
     for (char32_t c : *this) {
         if (index++ == p) { return c; }
     }
-    throw exceptions::not_implemented(__PRETTY_FUNCTION__);
+    throw exceptions::not_implemented{};
 }
 
 
@@ -102,7 +93,8 @@ fostlib::string::size_type
         fostlib::string::find(const string &f, size_type off) const {
     size_type index{};
     for (auto pos = begin(), e = end(); pos != e; ++pos, ++index) {
-        if (index >= off && f5::u8string{pos, e}.starts_with(f)) return index;
+        if (index >= off && felspar::u8string{pos, e}.starts_with(f))
+            return index;
     }
     return npos;
 }

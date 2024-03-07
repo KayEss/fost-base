@@ -1,11 +1,3 @@
-/**
-    Copyright 2010-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_DETAIL_LOG_SINKS_HPP
 #define FOST_DETAIL_LOG_SINKS_HPP
 #pragma once
@@ -14,8 +6,9 @@
 #include <fost/json.hpp>
 #include <fost/timestamp.hpp>
 
-
 #include <fost/log-message.hpp>
+
+#include <functional>
 
 
 namespace fostlib {
@@ -70,10 +63,14 @@ namespace fostlib {
             };
 
             /// Base class for handling registration of global sinks
-            class FOST_CORE_DECLSPEC global_sink_base : boost::noncopyable {
+            class FOST_CORE_DECLSPEC global_sink_base {
               protected:
                 /// Registers a global sink type with the global sink registry
                 global_sink_base(const string &);
+                global_sink_base(global_sink_base const &) = delete;
+                global_sink_base(global_sink_base &&) = delete;
+                global_sink_base &operator=(global_sink_base const &) = delete;
+                global_sink_base &operator=(global_sink_base &&) = delete;
                 /// De-register a global sink type
                 virtual ~global_sink_base();
 
@@ -82,7 +79,7 @@ namespace fostlib {
                 accessors<const string> name;
 
                 /// Construct a new instance of the global sink type
-                virtual boost::shared_ptr<global_sink_wrapper_base>
+                virtual std::shared_ptr<global_sink_wrapper_base>
                         construct(const json &configuration) const = 0;
             };
 

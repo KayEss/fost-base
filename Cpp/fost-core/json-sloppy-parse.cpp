@@ -1,11 +1,3 @@
-/**
-    Copyright 2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/parse/json.hpp>
 
@@ -15,17 +7,18 @@
 
 namespace {
     const fostlib::sloppy_json_parser<
-            f5::cord::const_u32u16_iterator<fostlib::string::const_iterator>>
+            felspar::cord::const_u32u16_iterator<fostlib::string::const_iterator>>
             c_json_str_rule;
     const fostlib::sloppy_json_parser<
-            f5::cord::const_u32u16_iterator<f5::u8view::const_iterator>>
+            felspar::cord::const_u32u16_iterator<felspar::u8view::const_iterator>>
             c_json_u8v_rule;
 }
 
 
-fostlib::json fostlib::json::sloppy_parse(f5::u8view toparse) {
+fostlib::json fostlib::json::sloppy_parse(felspar::u8view toparse) {
     fostlib::json ret{};
-    auto pos = f5::cord::make_u32u16_iterator(toparse.begin(), toparse.end());
+    auto pos =
+            felspar::cord::make_u32u16_iterator(toparse.begin(), toparse.end());
     try {
         if (boost::spirit::qi::parse(pos.first, pos.second, c_json_u8v_rule, ret)
             && pos.first == pos.second) {
@@ -46,7 +39,8 @@ fostlib::json fostlib::json::sloppy_parse(f5::u8view toparse) {
 fostlib::json
         fostlib::json::sloppy_parse(const string &toparse, const json &def) {
     fostlib::json ret{};
-    auto pos = f5::cord::make_u32u16_iterator(toparse.begin(), toparse.end());
+    auto pos =
+            felspar::cord::make_u32u16_iterator(toparse.begin(), toparse.end());
     try {
         if (boost::spirit::qi::parse(pos.first, pos.second, c_json_str_rule, ret)
             && pos.first == pos.second) {

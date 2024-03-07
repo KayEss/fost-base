@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_ASCII_STRING_HPP
 #define FOST_ASCII_STRING_HPP
 
@@ -103,9 +95,9 @@ namespace fostlib {
         }
     };
     template<>
-    struct coercer<f5::u8view, ascii_printable_string> {
-        f5::u8view coerce(const ascii_printable_string &s) {
-            return f5::u8view{s};
+    struct coercer<felspar::u8view, ascii_printable_string> {
+        felspar::u8view coerce(const ascii_printable_string &s) {
+            return felspar::u8view{s};
         }
     };
 

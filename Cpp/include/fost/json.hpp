@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_JSON_HPP
 #define FOST_JSON_HPP
 #pragma once
@@ -65,8 +57,9 @@ namespace fostlib {
         /// Converting constructors
         explicit jcursor(int i);
         explicit jcursor(json::array_t::size_type i);
-        explicit jcursor(f5::u8view);
-        explicit jcursor(string &&);
+        explicit jcursor(felspar::u8view);
+        explicit jcursor(felspar::u8string s);
+        explicit jcursor(string);
         explicit jcursor(const json &j);
 
         /// Construct a jcursor from a string using the requested string as
@@ -104,7 +97,7 @@ namespace fostlib {
         jcursor &operator/=(nliteral n) {
             return (*this) /= fostlib::string(n);
         }
-        jcursor &operator/=(f5::u8view);
+        jcursor &operator/=(felspar::u8view);
         jcursor &operator/=(const json &j);
         jcursor &operator/=(const jcursor &jc);
 
@@ -134,15 +127,27 @@ namespace fostlib {
 
         /// Insert at this location in the passed in `json`. Fails if the
         /// location is occupied.
-        json &insert(json &j, json &&v) const;
+        json &
+                insert(json &j,
+                       json &&v,
+                       felspar::source_location const & =
+                               felspar::source_location::current()) const;
         template<typename V>
-        json &insert(json &j, V &&v) const {
-            return insert(j, json{std::forward<V>(v)});
+        json &
+                insert(json &j,
+                       V &&v,
+                       felspar::source_location const &loc =
+                               felspar::source_location::current()) const {
+            return insert(j, json{std::forward<V>(v)}, loc);
         }
         template<typename V>
-        [[nodiscard]] json insert(json &&j, V &&v) const {
+        [[nodiscard]] json
+                insert(json &&j,
+                       V &&v,
+                       felspar::source_location const &loc =
+                               felspar::source_location::current()) const {
             auto copy{std::move(j)};
-            insert(copy, std::forward<V>(v));
+            insert(copy, std::forward<V>(v), loc);
             return copy;
         }
 
@@ -179,7 +184,6 @@ namespace fostlib {
 
         /// Compare for equality
         bool operator==(const jcursor &j) const;
-        bool operator!=(const jcursor &j) const { return !(*this == j); }
 
         /// Allow this jcursor to look a bit like a container
         typedef stack_t::const_iterator const_iterator;
@@ -198,8 +202,8 @@ namespace fostlib {
         /// ### JSON pointer
 
         /// From a JSON pointer URL fragment or JSON string
-        static jcursor parse_json_pointer_string(f5::u8view);
-        static jcursor parse_json_pointer_fragment(f5::u8view);
+        static jcursor parse_json_pointer_string(felspar::u8view);
+        static jcursor parse_json_pointer_fragment(felspar::u8view);
         /// Turn into a JSON pointer fragment (without leading #)
         ascii_printable_string as_json_pointer() const;
 
@@ -223,7 +227,7 @@ namespace fostlib {
 
 
     /// Allow comparison of parts of a jcursor to a literal
-    bool operator==(const jcursor::value_type &, f5::u8view);
+    bool operator==(const jcursor::value_type &, felspar::u8view);
 
 
     template<typename F>
@@ -236,34 +240,48 @@ namespace fostlib {
             }
         }
     };
-    template<>
-    struct coercer<json, std::nullopt_t> {
-        json coerce(std::nullopt_t) { return json{}; }
-    };
     template<typename T>
     struct coercer<std::optional<T>, json> {
-        std::optional<T> coerce(json const &f) {
+        std::optional<T> coerce(json const &f, felspar::source_location loc) {
             if (f.isnull()) {
                 return std::nullopt;
             } else {
-                return coercer<T, json>{}.coerce(f);
+                return coercer<T, json>{}.coerce(f, std::move(loc));
             }
         }
     };
 
 
-    /// Allow us to coerce from any integral type to JSON
     template<typename F>
-    struct coercer<json, F, std::enable_if_t<std::is_integral_v<F>>> {
-        auto coerce(F i) { return json{fostlib::coerce<int64_t>(i)}; }
+    struct coercer<json, felspar::memory::holding_pen<F>> {
+        json coerce(felspar::memory::holding_pen<F> const &f) {
+            if (not f) {
+                return json{};
+            } else {
+                return fostlib::coercer<json, F>().coerce(*f);
+            }
+        }
     };
+    template<typename T>
+    struct coercer<felspar::memory::holding_pen<T>, json> {
+        felspar::memory::holding_pen<T>
+                coerce(json const &f, felspar::source_location loc) {
+            if (f.isnull()) {
+                return {};
+            } else {
+                return coercer<T, json>{}.coerce(f, std::move(loc));
+            }
+        }
+    };
+
 
     /// Allow us to coerce to any integral type from JSON
     template<typename T>
-    struct coercer<T, fostlib::json, std::enable_if_t<std::is_integral_v<T>>> {
-        T coerce(const fostlib::json &j) {
+    requires std::is_integral_v<T>
+    struct coercer<T, fostlib::json> {
+        T coerce(const fostlib::json &j, felspar::source_location loc) {
             try {
-                return fostlib::coerce<T>(fostlib::coerce<int64_t>(j));
+                return fostlib::coerce<T>(fostlib::coerce<int64_t>(j, loc));
             } catch (fostlib::exceptions::exception &e) {
                 jcursor("action").insert(
                         e.data(),
@@ -275,99 +293,44 @@ namespace fostlib {
     };
     template<>
     struct FOST_CORE_DECLSPEC coercer<int64_t, json> {
-        int64_t coerce(const json &j);
+        int64_t coerce(const json &j, felspar::source_location);
     };
 
-
-    /// Allow us to do coercions to JSON as this regularises a lot of other code
-    template<>
-    struct coercer<json, json> {
-        /// Just pass on the JSON we were given
-        const json &coerce(const json &j) { return j; }
-    };
-
-    template<>
-    struct coercer<json, bool> {
-        json coerce(bool b) { return json(b); }
-    };
+    /// Bool and json
     template<>
     struct FOST_CORE_DECLSPEC coercer<bool, json> {
-        bool coerce(const json &f);
+        bool coerce(const json &f, felspar::source_location);
     };
 
-    /// Allow conversion of a double into JSON
-    template<>
-    struct coercer<json, double> {
-        json coerce(double d) { return json(d); }
-    };
     /// Allow conversion of JSON to a double
     template<>
     struct FOST_CORE_DECLSPEC coercer<double, json> {
-        double coerce(const json &j);
+        double coerce(const json &j, felspar::source_location);
     };
 
-    /// Allow conversion of strings into JSON
-    template<>
-    struct coercer<json, string> {
-        json coerce(const string &s) { return json(s); }
-    };
-    /// Allow conversion of JSON into strings. Coercion to a f5::u8view only
-    /// works where the JSON is a string of some sort. If the JSON may be
+    /// Allow conversion of JSON into strings. Coercion to a felspar::u8view
+    /// only works where the JSON is a string of some sort. If the JSON may be
     /// a number (for example) and you still want to try to get a string
     /// then you need to coerce to a fostlib::string.
     template<>
-    struct FOST_CORE_DECLSPEC coercer<f5::u8view, json> {
-        f5::u8view coerce(const json &);
+    struct FOST_CORE_DECLSPEC coercer<felspar::u8view, json> {
+        felspar::u8view coerce(json const &, felspar::source_location loc);
     };
     template<>
     struct FOST_CORE_DECLSPEC coercer<string, json> {
-        string coerce(const json &f);
+        string coerce(const json &f, felspar::source_location loc);
     };
     template<>
-    struct coercer<f5::u8string, json> {
-        f5::u8string coerce(const json &f) {
-            return fostlib::coerce<string>(f).u8string_transition();
+    struct coercer<felspar::u8string, json> {
+        felspar::u8string coerce(const json &f, felspar::source_location loc) {
+            return fostlib::coerce<string>(f, loc).u8string_transition();
         }
     };
     /// Convert to a nullable u8view. If the contained type is not a
     /// string then this will return null rather than throw an error
     template<>
-    struct FOST_CORE_DECLSPEC coercer<nullable<f5::u8view>, json> {
-        nullable<f5::u8view> coerce(const json &);
-    };
-    /// Allow us to convert narrow string literals to JSON
-    template<std::size_t L>
-    struct coercer<json, char[L]> {
-        /// Perform the coercion
-        json coerce(const char n[L]) {
-            return json(fostlib::coerce<string>(n));
-        }
-    };
-    /// Allow us to convert const narrow string literals to JSON
-    template<std::size_t L>
-    struct coercer<json, const char[L]> {
-        /// Perform the coercion
-        json coerce(const char n[L]) {
-            return json(fostlib::coerce<string>(n));
-        }
-    };
-    /// Allow us to convert const wide string literals to JSON
-    template<>
-    struct coercer<json, nliteral> {
-        /// Perform the coercion
-        json coerce(nliteral n) { return json(fostlib::coerce<string>(n)); }
-    };
-    /// Allow us to convert from an JSON object_t to JSON
-    template<>
-    struct coercer<json, json::object_t> {
-        /// Perform the coercion
-        json coerce(const json::object_t &o) { return json(o); }
-    };
-    /// Allow us to convert from an JSON array_t to JSON
-    template<>
-    struct coercer<json, json::array_t> {
-        /// Perform the coercion
-        json coerce(const json::array_t &a) { return json(a); }
+    struct FOST_CORE_DECLSPEC coercer<nullable<felspar::u8view>, json> {
+        nullable<felspar::u8view> coerce(const json &);
     };
 
 

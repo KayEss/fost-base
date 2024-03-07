@@ -1,11 +1,3 @@
-/**
-    Copyright 2010-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_LOG_MESSAGE_HPP
 #define FOST_LOG_MESSAGE_HPP
 #pragma once
@@ -22,40 +14,31 @@ namespace fostlib {
 
 
         /// The logging messages themselves
-        class FOST_CORE_DECLSPEC message {
-            nullable<fostlib::module> opt_module;
-
-          public:
+        struct FOST_CORE_DECLSPEC message {
             /// Create a message from this data
-            message(const fostlib::module &,
-                    std::size_t,
-                    f5::u8string,
-                    const json &);
-
-            /// Create a log message from a JSON body forwarded from
-            /// elsewhere. Because these are typically forwarded from
-            /// some other context a local module must be provided
-            message(const fostlib::module &, const json &);
-
-            /// We need a copy constructor because of the weird trick
-            /// we're playing with the `opt_` members.
-            message(const message &);
-            /// We also want this to be moveable
-            message(message &&);
+            message(fostlib::module const &m,
+                    std::size_t l,
+                    felspar::u8string n,
+                    json j)
+            : when{std::chrono::system_clock::now()},
+              level{l},
+              name{std::move(n)},
+              body{std::move(j)},
+              m_module{&m} {}
 
             /// When the message was recorded
-            accessors<const timestamp> when;
+            std::chrono::system_clock::time_point when;
             /// The module name that the message is for
-            const fostlib::module &module() const { return m_module; }
+            fostlib::module const &module() const { return *m_module; }
             /// The level of the logging message
-            accessors<std::size_t> level;
+            std::size_t level;
             /// The name of the logging message
-            accessors<f5::u8string> name;
+            felspar::u8string name;
             /// The body data of the logging message
-            accessors<json> body;
+            json body;
 
           private:
-            const fostlib::module &m_module;
+            fostlib::module const *m_module;
         };
 
 

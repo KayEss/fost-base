@@ -8,13 +8,13 @@ add_library(fost-crypto
         password.cpp
         rsa.cpp
         signature.cpp
+        tweetnacl.cpp
     )
 target_link_libraries(fost-crypto crypto++ fost-core)
-set_target_properties(fost-crypto PROPERTIES DEBUG_POSTFIX "-d")
 install(TARGETS fost-crypto LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
 if(TARGET check)
-    add_library(fost-crypto-smoke STATIC EXCLUDE_FROM_ALL
+    add_test_run(check fost-crypto TESTS
             crypto-tests.cpp
             digests-tests.cpp
             ed25519.tests.cpp
@@ -23,6 +23,4 @@ if(TARGET check)
             password.tests.cpp
             rsa.tests.cpp
         )
-    target_link_libraries(fost-crypto-smoke fost-crypto)
-    smoke_test(fost-crypto-smoke)
 endif()

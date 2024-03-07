@@ -1,19 +1,11 @@
-/**
-    Copyright 2016-2019, Felspar Co Ltd. <http://support.felspar.com/>
-
-    Copyright 2012-2015, Proteus Technologies Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
-*/
-
-
 #include <fost/filesystem.hpp>
 #include <fost/sinks.panoptes.hpp>
 
+#include <fstream>
+
 
 namespace {
-    const fostlib::log::global_sink<fostlib::log::panoptes>
+    const fostlib::log::sink_function<fostlib::log::panoptes>
             c_logger("panoptes");
 }
 
@@ -26,18 +18,17 @@ bool fostlib::log::panoptes::operator()(const fostlib::log::message &m) {
             fostlib::json::unparse(fostlib::coerce<fostlib::json>(m), false));
     const auto *modp = &m.module();
 
-    fostlib::fs::path filename;
+    std::filesystem::path filename;
     auto archive = logfile_pathnames.find(modp);
     if (archive == logfile_pathnames.end()) {
         filename =
                 (logfile_pathnames[modp] =
-                         detail::archive_pathname(m.module()))(m.when());
+                         detail::archive_pathname(m.module()))(m.when);
     } else {
-        filename = (archive->second)(m.when());
+        filename = (archive->second)(m.when);
     }
 
-    fostlib::fs::ofstream file(
-            filename, std::ios_base::out | std::ios_base::app);
+    std::ofstream file{filename, std::ios_base::out | std::ios_base::app};
     file << entry << std::endl;
 
     return true;

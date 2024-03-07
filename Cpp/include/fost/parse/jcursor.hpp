@@ -1,11 +1,3 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #pragma once
 
 
@@ -37,7 +29,7 @@ namespace fostlib {
             number_part = qi::int_parser<jcursor::number_t>();
             string_part = characters[boost::phoenix::bind(
                     [](auto &v, auto &s) {
-                        auto pos = f5::cord::make_u16u32_iterator<
+                        auto pos = felspar::cord::make_u16u32_iterator<
                                 exceptions::unicode_encoding>(
                                 s.begin(), s.end());
                         for (; pos.first != pos.second; ++pos.first) {

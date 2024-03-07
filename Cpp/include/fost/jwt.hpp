@@ -1,16 +1,9 @@
-/**
-    Copyright 2016-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #pragma once
 
 
-#include <fost/datetime>
 #include <fost/crypto.hpp>
+#include <fost/datetime>
+#include <fost/insert>
 
 
 namespace fostlib {
@@ -26,10 +19,10 @@ namespace fostlib {
         /// Low level API for signing the header and payload BASE64 encoded
         /// parts of the JWT and returning the signed version
         [[nodiscard]] std::string sign_base64_string(
-                f5::u8view header_b64,
-                f5::u8view payload_b64,
+                felspar::u8view header_b64,
+                felspar::u8view payload_b64,
                 alg,
-                f5::buffer<const f5::byte> key);
+                felspar::buffer<const felspar::byte> key);
 
 
     }
@@ -62,15 +55,28 @@ namespace fostlib {
             mint &subject(const string &);
 
             /// Set the token to expire after this amount of time
-            timestamp expires(const timediff &, bool issued = true);
+            template<typename R, typename P>
+            std::chrono::system_clock::time_point
+                    expires(std::chrono::duration<R, P> const tp,
+                            bool const add_issued_claim = true) {
+                auto const now = std::chrono::system_clock::now();
+                auto const exp = now + tp;
+                if (add_issued_claim) {
+                    insert(m_payload, "iss",
+                           std::chrono::system_clock::to_time_t(now));
+                }
+                insert(m_payload, "exp",
+                       std::chrono::system_clock::to_time_t(exp));
+                return exp;
+            }
 
             /// Set a claim. If the claim name is not listed at
             /// http://www.iana.org/assignments/jwt/jwt.xhtml then
             /// it should be a URL. See RFC7519
-            mint &claim(f5::u8view url, const json &value);
+            mint &claim(felspar::u8view url, const json &value);
 
             /// Return the token
-            std::string token(f5::buffer<const f5::byte> key) const;
+            std::string token(felspar::buffer<const felspar::byte> key);
 
             /// Return the current payload
             const json &payload() const { return m_payload; }
@@ -80,14 +86,14 @@ namespace fostlib {
         /// Check a JWT
         struct token {
             /// Load the token with a secret returned by the lambda
-            static nullable<token>
-                    load(f5::u8view jwt,
-                         const std::function<std::vector<f5::byte>(json, json)>
-                                 &lambda);
+            static nullable<token> load(
+                    felspar::u8view jwt,
+                    const std::function<std::vector<felspar::byte>(json, json)>
+                            &lambda);
             /// Load the token and return it if verified
-            static nullable<token> load(string secret, f5::u8view jwt) {
+            static nullable<token> load(string secret, felspar::u8view jwt) {
                 return load(jwt, [secret = std::move(secret)](json, json) {
-                    return std::vector<f5::byte>(
+                    return std::vector<felspar::byte>(
                             secret.data().begin(), secret.data().end());
                 });
             }

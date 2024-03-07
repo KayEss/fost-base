@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/pointers>
 #include <fost/parse/parse.hpp>
@@ -21,7 +13,7 @@ using namespace fostlib;
 
 namespace {
     template<typename T>
-    T unsigned_p(f5::u8view s) {
+    T unsigned_p(felspar::u8view s) {
         T ret{};
         auto pos = s.begin();
         if (boost::spirit::qi::parse(
@@ -34,7 +26,7 @@ namespace {
         }
     }
     template<typename T>
-    T signed_p(f5::u8view s) {
+    T signed_p(felspar::u8view s) {
         T ret{};
         auto pos = s.begin();
         if (boost::spirit::qi::parse(
@@ -54,7 +46,7 @@ namespace {
 */
 
 
-uint16_t fostlib::coercer<uint16_t, f5::u8view>::coerce(f5::u8view s) {
+uint16_t fostlib::coercer<uint16_t, felspar::u8view>::coerce(felspar::u8view s) {
     return unsigned_p<uint16_t>(s);
 }
 
@@ -64,7 +56,7 @@ uint16_t fostlib::coercer<uint16_t, f5::u8view>::coerce(f5::u8view s) {
 */
 
 
-int fostlib::coercer<int, f5::u8view>::coerce(f5::u8view s) {
+int fostlib::coercer<int, felspar::u8view>::coerce(felspar::u8view s) {
     return signed_p<int>(s);
 }
 
@@ -74,8 +66,37 @@ int fostlib::coercer<int, f5::u8view>::coerce(f5::u8view s) {
 */
 
 
-int64_t fostlib::coercer<int64_t, f5::u8view>::coerce(f5::u8view s) {
+int64_t fostlib::coercer<int64_t, felspar::u8view>::coerce(felspar::u8view s) {
     return signed_p<int64_t>(s);
+}
+
+
+/**
+    uint64_t
+*/
+
+
+uint64_t fostlib::coercer<uint64_t, felspar::u8view>::coerce(felspar::u8view s) {
+    return unsigned_p<uint64_t>(s);
+}
+
+
+/**
+    float
+*/
+
+
+float fostlib::coercer<float, felspar::u8view>::coerce(felspar::u8view s) {
+    float ret{};
+    auto pos = s.begin(), end = s.end();
+    if (boost::spirit::qi::phrase_parse(
+                pos, end, boost::spirit::qi::float_, boost::spirit::qi::space,
+                ret)
+        && pos == end) {
+        return ret;
+    } else {
+        throw fostlib::exceptions::parse_error("Could not parse float", s);
+    }
 }
 
 
@@ -84,7 +105,7 @@ int64_t fostlib::coercer<int64_t, f5::u8view>::coerce(f5::u8view s) {
 */
 
 
-double fostlib::coercer<double, f5::u8view>::coerce(f5::u8view s) {
+double fostlib::coercer<double, felspar::u8view>::coerce(felspar::u8view s) {
     double ret{};
     auto pos = s.begin(), end = s.end();
     if (boost::spirit::qi::phrase_parse(

@@ -1,11 +1,3 @@
-/**
-    Copyright 1997-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_THREAD_HPP
 #define FOST_THREAD_HPP
 #pragma once
@@ -31,7 +23,7 @@ namespace fostlib {
 
     /// Represents a single a thread which can execute functions and return a
     /// fostlib::future.
-    class FOST_CORE_DECLSPEC worker : boost::noncopyable {
+    class FOST_CORE_DECLSPEC worker {
       private:
         struct context;
         std::shared_ptr<context> self;
@@ -93,7 +85,7 @@ namespace fostlib {
             /// Blocks waiting for the result to become available
             void wait();
             /// Blocks for up to the specified time period waiting for the result
-            void wait(const timediff &);
+            void wait(std::chrono::nanoseconds);
             /// Blocks waiting to see if there is an exception or not
             exception_type exception();
             /// Returns true if the result is available
@@ -179,7 +171,7 @@ namespace fostlib {
             return m_result->completed();
         }
         /// Returns true if the result is available within the specified timediff
-        bool available(const timediff &td) {
+        bool available(std::chrono::nanoseconds const td) {
             assert_valid();
             m_result->wait(td);
             return m_result->completed();

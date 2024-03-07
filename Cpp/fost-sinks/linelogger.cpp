@@ -1,11 +1,3 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include <fost/log>
 
 #include <iostream>
@@ -25,7 +17,7 @@ namespace {
           channel(conf["channel"] == fostlib::json("stderr") ? std::cerr
                                                              : std::cout) {}
         bool operator()(const fostlib::log::message &m) {
-            if (m.level() >= log_level) {
+            if (m.level >= log_level) {
                 channel << fostlib::json::unparse(
                         fostlib::coerce<fostlib::json>(m), false)
                         << std::endl;
@@ -35,7 +27,7 @@ namespace {
     };
 
 
-    const fostlib::log::global_sink<line_logger> line{"line"};
+    const fostlib::log::sink_function<line_logger> line{"line"};
 
 
 }

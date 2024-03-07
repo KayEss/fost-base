@@ -1,11 +1,3 @@
-/**
-    Copyright 2009-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core-test.hpp"
 #include <fost/unicode>
 
@@ -50,11 +42,13 @@ FSL_TEST_FUNCTION(coerce) {
     FSL_CHECK_EQ(
             fostlib::coerce<fostlib::string>(fostlib::utf8_string("abc")),
             "abc");
+    /// This test won't compile on libstdc++ as C++ 20 due to a deleted
+    /// operator<<
     // FSL_CHECK_EQ(
     //         fostlib::coerce<fostlib::string>(fostlib::utf8_string(s)),
     //         u"\x00e6");
     FSL_CHECK_EQ(
             fostlib::utf8_string("S") + fostlib::utf8_string(s)
                     + fostlib::utf8_string("lensminde"),
-            fostlib::utf8_string{f5::u8string{u"S\x00e6lensminde"}});
+            fostlib::utf8_string{felspar::u8string{u"S\x00e6lensminde"}});
 }

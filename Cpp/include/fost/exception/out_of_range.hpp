@@ -1,11 +1,3 @@
-/**
-    Copyright 2001-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_EXCEPTION_OUT_OF_RANGE_HPP
 #define FOST_EXCEPTION_OUT_OF_RANGE_HPP
 #pragma once
@@ -26,36 +18,44 @@ namespace fostlib {
             out_of_range_string(
                     const string &min,
                     const string &max,
-                    const string &value) noexcept;
+                    const string &value,
+                    felspar::source_location =
+                            felspar::source_location::current()) noexcept;
             out_of_range_string(
                     const string &message,
                     const string &min,
                     const string &max,
-                    const string &value) noexcept;
+                    const string &value,
+                    felspar::source_location =
+                            felspar::source_location::current()) noexcept;
 
           protected:
-            const wchar_t *const message() const noexcept;
+            felspar::u8view message() const noexcept;
         };
 
 
         template<typename T, typename U = T>
         class out_of_range : public out_of_range_string {
           public:
-            out_of_range(const T min, const T max, const U value) noexcept
-            : out_of_range_string(
-                    coerce<string>(min),
-                    coerce<string>(max),
-                    coerce<string>(value)) {}
+            out_of_range(
+                    const T min,
+                    const T max,
+                    const U value,
+                    felspar::source_location sl =
+                            felspar::source_location::current()) noexcept
+            : out_of_range_string{
+                    coerce<string>(min), coerce<string>(max),
+                    coerce<string>(value), std::move(sl)} {}
             out_of_range(
                     const string &message,
                     const T min,
                     const T max,
-                    const U value) noexcept
-            : out_of_range_string(
-                    message,
-                    coerce<string>(min),
-                    coerce<string>(max),
-                    coerce<string>(value)) {}
+                    const U value,
+                    felspar::source_location sl =
+                            felspar::source_location::current()) noexcept
+            : out_of_range_string{
+                    message, coerce<string>(min), coerce<string>(max),
+                    coerce<string>(value), std::move(sl)} {}
         };
 
 

@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/json.hpp>
 #include <fost/unicode.hpp>
@@ -31,8 +23,8 @@ namespace {
         if (digits) to_hex(into, c >> 4, digits - 1);
         into += l;
     }
-    inline void string_to_json(std::string &into, f5::u8view sv) {
-        f5::cord::const_u8buffer s{sv};
+    inline void string_to_json(std::string &into, felspar::u8view sv) {
+        auto s = sv.memory();
         into += '"';
         for (unsigned char i : s) {
             if (i < 0x20) {
@@ -75,7 +67,7 @@ namespace {
             into += static_cast<std::string_view>(
                     fostlib::coerce<fostlib::string>(d));
         }
-        void operator()(f5::lstring s) const { string_to_json(into, s); }
+        void operator()(felspar::lstring s) const { string_to_json(into, s); }
         void operator()(const json::string_t &s) const {
             string_to_json(into, s);
         }
@@ -134,6 +126,13 @@ namespace {
         void operator()(const json::object_p &t) const {
             if (t->size() == 0) {
                 into += "{}";
+            } else if (t->size() == 1) {
+                auto i = t->begin();
+                into += '{';
+                string_to_json(into, i->first);
+                into += ": ";
+                i->second.apply_visitor(*this);
+                into += '}';
             } else {
                 into += '{';
                 ++indentation;
@@ -142,7 +141,7 @@ namespace {
                     into += (i == t->begin() ? "\n" : ",\n");
                     tab(into, indentation);
                     string_to_json(into, i->first);
-                    into += " : ";
+                    into += ": ";
                     i->second.apply_visitor(*this);
                 }
                 --indentation;

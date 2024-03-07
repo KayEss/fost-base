@@ -1,11 +1,3 @@
-/**
-    Copyright 2001-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_SETTINGS_HPP
 #define FOST_SETTINGS_HPP
 #pragma once
@@ -14,6 +6,8 @@
 #include <fost/json.hpp>
 #include <fost/accessors.hpp>
 #include <fost/filesystem.hpp>
+
+#include <list>
 
 
 namespace fostlib {
@@ -36,20 +30,23 @@ namespace fostlib {
         setting &operator=(const setting &) = delete;
 
         template<typename T>
-        setting(const string &domain, const setting &setting, const T &value)
-        : domain(setting.domain()),
+        setting(string const &domain, setting const &setting, T &&value)
+        : domain(domain),
           section(setting.section()),
           name(setting.name()),
-          m_value(json(value)) {
+          m_value{coerce<json>(std::forward<T>(value))} {
             construct(domain, section(), name(), m_value, false);
         }
         template<typename T>
-        setting(const string &domain,
-                const string &section,
-                const string &name,
-                const T &value,
-                bool def = false)
-        : domain(domain), section(section), name(name), m_value(json(value)) {
+        setting(string const &domain,
+                string const &section,
+                string const &name,
+                T &&value,
+                bool const def = false)
+        : domain{domain},
+          section{section},
+          name{name},
+          m_value{coerce<json>(std::forward<T>(value))} {
             construct(domain, section, name, m_value, def);
         }
         virtual ~setting();
@@ -135,7 +132,7 @@ namespace fostlib {
     /// Store a number of settings read from the passed in JSON blob
     class FOST_CORE_DECLSPEC settings {
         std::vector<std::unique_ptr<setting<json>>> m_settings;
-        void load_settings(const string &domain, const fostlib::fs::path &);
+        void load_settings(const string &domain, std::filesystem::path const &);
         void load_settings(const string &domain, const json &);
 
       public:
@@ -144,7 +141,7 @@ namespace fostlib {
         /// Construct the settings given a JSON file in the specified setting
         settings(const setting<string> &);
         /// Construct the settings given a filename containing JSON
-        settings(const fostlib::fs::path &);
+        settings(std::filesystem::path const &);
     };
 
 

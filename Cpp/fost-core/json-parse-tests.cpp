@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include <fost/array>
 #include "fost-core-test.hpp"
 
@@ -76,7 +68,7 @@ FSL_TEST_FUNCTION(atoms) {
 
 
 FSL_TEST_FUNCTION(string_no_unicode_escapes) {
-    auto const parse = [](f5::u8view text) {
+    auto const parse = [](felspar::u8view text) {
         fostlib::json_string_parser_no_unicode_escapes<char const *> const p;
         fostlib::string ret;
         char const *pos = reinterpret_cast<char const *>(text.memory().begin());
@@ -120,8 +112,8 @@ FSL_TEST_FUNCTION(json_broken) {
     FSL_CHECK_EXCEPTION(fostlib::json::parse("{\"\":"), parse_error &);
     FSL_CHECK_EXCEPTION(fostlib::json::parse("{}}"), parse_error &);
     //     FSL_CHECK_EXCEPTION(
-    //             fostlib::json::parse(f5::u8view{std::string(10000, '[')}),
-    //             parse_error &);
+    //             fostlib::json::parse(felspar::u8view{std::string(10000,
+    //             '[')}), parse_error &);
 
     FSL_CHECK_EXCEPTION(fostlib::json::parse("[0x42]"), parse_error &);
 

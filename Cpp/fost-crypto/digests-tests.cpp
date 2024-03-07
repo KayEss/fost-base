@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-crypto-test.hpp"
 #include <fost/crypto>
 #include <fost/unicode>
@@ -105,28 +97,4 @@ FSL_TEST_FUNCTION(md5_parts) {
     FSL_CHECK_EQ(
             fostlib::coerce<fostlib::hex_string>(ex1.digest()),
             fostlib::hex_string("9e107d9d372bb6826bd81d3542a419d6"));
-}
-
-
-/**
-    ## Keccak 256
- */
-
-
-FSL_TEST_FUNCTION(keccak256_yoda) {
-    fostlib::digester ex1(fostlib::keccak256);
-    ex1 << fostlib::string("Yoda said, Do or do not. There is not try.");
-    FSL_CHECK_EQ(
-            fostlib::coerce<fostlib::hex_string>(ex1.digest()),
-            fostlib::hex_string{"908629918e36a3dea875b9d11f725aabf68a61d91f1a67"
-                                "5e73c426e18d9781da"});
-}
-FSL_TEST_FUNCTION(keccak256_yoda_parts) {
-    fostlib::digester ex1(fostlib::keccak256);
-    ex1 << fostlib::string{"Yoda said, Do or do not. "};
-    ex1 << f5::u8view{"There is not try."};
-    FSL_CHECK_EQ(
-            fostlib::coerce<fostlib::hex_string>(ex1.digest()),
-            fostlib::hex_string{"908629918e36a3dea875b9d11f725aabf68a61d91f1a67"
-                                "5e73c426e18d9781da"});
 }

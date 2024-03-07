@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/json.hpp>
 #include <fost/insert.hpp>
@@ -28,7 +20,7 @@
 
 
 bool fostlib::operator==(
-        const fostlib::jcursor::value_type &lhs, f5::u8view rhs) {
+        const fostlib::jcursor::value_type &lhs, felspar::u8view rhs) {
     auto lhs_sp = std::get_if<fostlib::string>(&lhs);
     if (lhs_sp) {
         return *lhs_sp == rhs;
@@ -53,8 +45,11 @@ fostlib::jcursor::jcursor(json::array_t::size_type i) {
 fostlib::jcursor::jcursor(nliteral n) {
     m_position.push_back(fostlib::string(n));
 }
-fostlib::jcursor::jcursor(f5::u8view s) { m_position.push_back(s); }
-fostlib::jcursor::jcursor(fostlib::string &&s) {
+fostlib::jcursor::jcursor(felspar::u8view s) { m_position.push_back(s); }
+fostlib::jcursor::jcursor(felspar::u8string s) {
+    m_position.push_back(std::move(s));
+}
+fostlib::jcursor::jcursor(fostlib::string s) {
     m_position.push_back(std::move(s));
 }
 fostlib::jcursor::jcursor(const json &j) {
@@ -62,7 +57,7 @@ fostlib::jcursor::jcursor(const json &j) {
     if (i) {
         m_position.push_back(coerce<json::array_t::size_type>(i.value()));
     } else {
-        auto s = j.get<f5::u8view>();
+        auto s = j.get<felspar::u8view>();
         if (s) {
             m_position.push_back(s.value());
         } else {
@@ -94,7 +89,7 @@ fostlib::jcursor &fostlib::jcursor::operator/=(json::array_t::size_type i) {
     m_position.push_back(i);
     return *this;
 }
-fostlib::jcursor &fostlib::jcursor::operator/=(f5::u8view i) {
+fostlib::jcursor &fostlib::jcursor::operator/=(felspar::u8view i) {
     m_position.push_back(i);
     return *this;
 }
@@ -214,12 +209,13 @@ fostlib::json &fostlib::jcursor::push_back(json &j, json &&v) const {
 }
 
 
-fostlib::json &fostlib::jcursor::insert(json &j, json &&v) const {
-    if (!j.has_key(*this)) {
+fostlib::json &fostlib::jcursor::insert(
+        json &j, json &&v, felspar::source_location const &loc) const {
+    if (not j.has_key(*this)) {
         copy_from_root(j) = std::move(v);
     } else {
         exceptions::not_null error(
-                "There is already some JSON at this key position");
+                "There is already some JSON at this key position", loc);
         fostlib::insert(error.data(), "json", j);
         fostlib::insert(error.data(), "value", v);
         fostlib::insert(error.data(), "key", *this);
@@ -316,11 +312,11 @@ bool fostlib::jcursor::operator==(const jcursor &j) const {
  */
 
 
-fostlib::jcursor fostlib::jcursor::parse_json_pointer_string(f5::u8view s) {
+fostlib::jcursor fostlib::jcursor::parse_json_pointer_string(felspar::u8view s) {
     jcursor ret;
-    auto pos = f5::cord::make_u32u16_iterator(s.begin(), s.end());
+    auto pos = felspar::cord::make_u32u16_iterator(s.begin(), s.end());
     const json_pointer_parser<
-            f5::cord::const_u32u16_iterator<f5::u8view::const_iterator>>
+            felspar::cord::const_u32u16_iterator<felspar::u8view::const_iterator>>
             parser;
     if (boost::spirit::qi::parse(pos.first, pos.second, parser, ret)
         && pos.first == pos.second) {
@@ -331,7 +327,8 @@ fostlib::jcursor fostlib::jcursor::parse_json_pointer_string(f5::u8view s) {
                 string(pos.first.u32_iterator(), pos.second.u32_iterator()));
     }
 }
-fostlib::jcursor fostlib::jcursor::parse_json_pointer_fragment(f5::u8view s) {
+fostlib::jcursor
+        fostlib::jcursor::parse_json_pointer_fragment(felspar::u8view s) {
     jcursor ret;
     auto *pos = s.data(), *end = s.data() + s.bytes();
     const json_pointer_fragment_parser<decltype(pos)> parser;
@@ -340,7 +337,7 @@ fostlib::jcursor fostlib::jcursor::parse_json_pointer_fragment(f5::u8view s) {
     } else {
         throw exceptions::parse_error(
                 "Whilst parsing JSON pointer fragment",
-                f5::u8view{pos, std::size_t(end - pos)});
+                felspar::u8view{pos, std::size_t(end - pos)});
     }
 }
 
@@ -374,7 +371,7 @@ fostlib::ascii_printable_string fostlib::jcursor::as_json_pointer() const {
                 } else if (c < 0x7f) { // 7 bit safe
                     pointer += c;
                 } else {
-                    auto [bytes, chars] = f5::cord::u8encode(c);
+                    auto [bytes, chars] = felspar::cord::u8encode(c);
                     for (char b{}; b < bytes; ++b) { hex(chars[b]); }
                 }
             }

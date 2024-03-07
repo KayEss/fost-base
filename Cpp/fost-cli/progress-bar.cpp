@@ -1,19 +1,9 @@
-/**
-    Copyright 2013-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-cli.hpp"
 #include <fost/progress-cli>
 
 
-using namespace fostlib;
-
-
-string fostlib::cli::bar(const meter::reading &r, const std::size_t width) {
+fostlib::string
+        fostlib::cli::bar(progress::reading const &r, std::size_t const width) {
     if (r.is_complete()) {
         return string(width, '.');
     } else if (not r.work().value_or(0)) {
@@ -25,7 +15,11 @@ string fostlib::cli::bar(const meter::reading &r, const std::size_t width) {
 }
 
 
-string fostlib::cli::detail::prefix(const meter::reading &) { return "["; }
+fostlib::string fostlib::cli::detail::prefix(progress::reading const &) {
+    return "[";
+}
 
 
-string fostlib::cli::detail::suffix(const meter::reading &) { return "]"; }
+fostlib::string fostlib::cli::detail::suffix(progress::reading const &) {
+    return "]";
+}

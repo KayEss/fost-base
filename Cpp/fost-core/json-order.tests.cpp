@@ -1,17 +1,9 @@
-/**
-    Copyright 2016-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core-test.hpp"
 #include <fost/insert.hpp>
 #include <fost/json-order.hpp>
 #include <fost/push_back.hpp>
 
-using namespace f5::literals;
+using namespace felspar::literals;
 using fostlib::json;
 using fostlib::null;
 

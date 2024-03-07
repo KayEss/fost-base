@@ -1,18 +1,10 @@
-/**
-    Copyright 2001-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_STRING_HPP
 #define FOST_STRING_HPP
 #pragma once
 
 
 #include <fost/string-fwd.hpp>
-#include <f5/cord/iostream.hpp>
+#include <felspar/cord/iostream.hpp>
 
 #include <ostream>
 
@@ -29,7 +21,7 @@ namespace fostlib {
         Interim wrapper around u8string. The intention is that we merge the
         types together so that we can switch over to u8string later on.
     */
-    class string : public f5::u8string {
+    class string : public felspar::u8string {
       public:
         using size_type = std::size_t;
         /// Marker for end of string
@@ -37,22 +29,21 @@ namespace fostlib {
                 std::numeric_limits<size_type>::max();
 
         /// ### Constructors
-        using f5::u8string::u8string;
-        string(f5::u8string s) : f5::u8string{s} {}
-        string(std::string s) : f5::u8string{std::move(s)} {}
+        using felspar::u8string::u8string;
+        string(felspar::u8string s) : felspar::u8string{s} {}
+        string(std::string s) : felspar::u8string{std::move(s)} {}
         explicit string(std::string_view s) : string{std::string{s}} {}
-        string(nliteral s) : f5::u8string{std::string(s)} {}
-        explicit string(char32_t c) : string{1u, char32_t(c)} {}
+        string(nliteral s) : felspar::u8string{std::string(s)} {}
         string(size_type, char32_t);
         string(const string &, size_type, size_type = npos);
         string(std::string::const_iterator b, std::string::const_iterator e)
-        : f5::u8string{std::string{b, e}} {}
+        : felspar::u8string{std::string{b, e}} {}
 
         /// ### Conversions
-        using f5::u8string::operator std::string_view;
-        using f5::u8string::operator std::string;
-        using f5::u8string::operator f5::u8view;
-        using f5::u8string::shrink_to_fit;
+        using felspar::u8string::operator std::string_view;
+        using felspar::u8string::operator std::string;
+        using felspar::u8string::operator felspar::u8view;
+        using felspar::u8string::shrink_to_fit;
 
         /// We also need to allow this type to be changed to its super class
         /// to help the transition over to this implementation. Because we
@@ -61,105 +52,91 @@ namespace fostlib {
         /// in new code, we need a way to cleanly convert over. This is done
         /// in a new function that can be deprecated once the rest of the
         /// old string API has been removed.
-        f5::u8string u8string_transition() const { return f5::u8string{*this}; }
+        felspar::u8string u8string_transition() const {
+            return felspar::u8string{*this};
+        }
 
         /// ### Simple query APIs
-        using f5::u8string::bytes;
-        using f5::u8string::empty;
-        using f5::u8string::memory;
+        using felspar::u8string::bytes;
+        using felspar::u8string::empty;
+        using felspar::u8string::memory;
         auto data() const { return memory(); }
-        using f5::u8string::code_points;
+        using felspar::u8string::code_points;
 
         /// ### String operations
-        string operator+(f5::u8view v) const { return f5::u8view{*this} + v; }
-        string operator+(f5::lstring v) const {
-            return f5::u8view{*this} + f5::u8view{v};
+        string operator+(felspar::u8view v) const {
+            return felspar::u8view{*this} + v;
+        }
+        string operator+(felspar::lstring v) const {
+            return felspar::u8view{*this} + felspar::u8view{v};
         }
         string operator+(string const &v) const {
-            return f5::u8view{*this} + f5::u8view{v};
+            return felspar::u8view{*this} + felspar::u8view{v};
         }
         string operator+(char32_t) const;
         string operator+(nliteral r) const {
-            return f5::u8view{*this} + f5::u8view{r, std::strlen(r)};
+            return felspar::u8view{*this} + felspar::u8view{r, std::strlen(r)};
         }
         /// Because our underlying string type is immutable it makes no sense
         /// to do any reservation.
         void reserve(size_type) {}
 
         /// ### Iteration based APIs
-        using f5::u8string::begin;
-        using f5::u8string::const_iterator;
-        using f5::u8string::end;
+        using felspar::u8string::begin;
+        using felspar::u8string::const_iterator;
+        using felspar::u8string::end;
 
         /// ### Comparison operators
 
         /// We need these explicitly here to resolve ambiguities otherwise
-        /// things get too complicated The implementation in f5::u8string is
-        /// generic though, so that's good
+        /// things get too complicated The implementation in felspar::u8string
+        /// is generic though, so that's good
         friend bool operator==(string const &l, string const &r) {
-            return f5::u8view{l} == f5::u8view{r};
+            return felspar::u8view{l} == felspar::u8view{r};
         }
-        friend bool operator==(string const &l, f5::u8view r) {
-            return f5::u8view{l} == r;
+        friend bool operator==(string const &l, felspar::u8view r) {
+            return felspar::u8view{l} == r;
         }
         friend bool operator==(string const &l, std::string const &r) {
-            return f5::u8view{l} == r;
+            return felspar::u8view{l} == r;
         }
         friend bool operator==(string const &l, char const *r) {
-            return f5::u8view{l} == r;
+            return felspar::u8view{l} == r;
         }
-        friend bool operator==(f5::u8string l, string const &r) {
-            return l == f5::u8view{r};
+        friend bool operator==(felspar::u8string l, string const &r) {
+            return l == felspar::u8view{r};
         }
-        friend bool operator==(f5::lstring l, string const &r) {
-            return l == f5::u8view{r};
+        friend bool operator==(felspar::lstring l, string const &r) {
+            return l == felspar::u8view{r};
         }
         template<size_type N>
         friend bool operator==(string const &l, char const (&r)[N]) {
-            return f5::u8view{l} == r;
+            return felspar::u8view{l} == r;
         }
         template<size_type N>
         friend bool operator==(char const (&l)[N], string const &r) {
-            return l == f5::u8view{r};
+            return l == felspar::u8view{r};
         }
 
         friend bool operator!=(string const &l, string const &r) {
-            return f5::u8view{l} != f5::u8view{r};
+            return felspar::u8view{l} != felspar::u8view{r};
         }
-        friend bool operator!=(string const &l, f5::u8view r) {
-            return f5::u8view{l} != r;
+        friend bool operator!=(string const &l, felspar::u8view r) {
+            return felspar::u8view{l} != r;
         }
-        friend bool operator!=(f5::u8view l, string const &r) {
-            return l != f5::u8view{r};
+        friend bool operator!=(felspar::u8view l, string const &r) {
+            return l != felspar::u8view{r};
         }
         template<size_type N>
         friend bool operator!=(string const &l, char const (&r)[N]) {
-            return f5::u8view{l} != r;
+            return felspar::u8view{l} != r;
         }
         template<size_type N>
         friend bool operator!=(char const (&l)[N], string const &r) {
-            return l != f5::u8view{r};
+            return l != felspar::u8view{r};
         }
 
-        using f5::u8string::operator<;
-        bool operator<(nliteral r) const {
-            return f5::u8view{*this} < f5::u8view{r, std::strlen(r)};
-        }
-
-        using f5::u8string::operator<=;
-        bool operator<=(nliteral r) const {
-            return f5::u8view{*this} <= f5::u8view{r, std::strlen(r)};
-        }
-
-        using f5::u8string::operator>;
-        bool operator>(nliteral r) const {
-            return f5::u8view{*this} > f5::u8view{r, std::strlen(r)};
-        }
-
-        using f5::u8string::operator>=;
-        bool operator>=(nliteral r) const {
-            return f5::u8view{*this} >= f5::u8view{r, std::strlen(r)};
-        }
+        auto operator<=>(string const &right) const = default;
 
         /// ### Algorithmic APIs
         size_type find(char32_t, size_type = 0u) const;
@@ -168,25 +145,25 @@ namespace fostlib {
         size_type find_first_of(const string &) const;
         size_type find_first_not_of(const string &) const;
         size_type find_last_not_of(const string &) const;
-        using f5::u8string::starts_with;
+        using felspar::u8string::starts_with;
         bool startswith(const string &s) const {
-            return starts_with(f5::u8view{s});
+            return starts_with(felspar::u8view{s});
         }
         bool startswith(char32_t c) const {
             return not empty() && *begin() == c;
         }
-        using f5::u8string::ends_with;
+        using felspar::u8string::ends_with;
         bool endswith(const string &s) const {
-            return ends_with(f5::u8view{s});
+            return ends_with(felspar::u8view{s});
         }
         bool endswith(char32_t c) const { return ends_with(string{1u, c}); }
 
         /// ### Mutation APIs (to be deprecated)
         string &operator+=(wchar_t c) { return *this = (*this + c); }
         string &operator+=(const string &s) {
-            return *this = f5::u8view{*this} + f5::u8view{s};
+            return *this = felspar::u8view{*this} + felspar::u8view{s};
         }
-        string &clear() { return *this = f5::u8string{}; }
+        string &clear() { return *this = felspar::u8string{}; }
         string &erase() { return clear(); }
         string &erase(size_type s); // Erase from s to end
         string &erase(size_type s, size_type c); // Erase c chars from s
@@ -200,9 +177,11 @@ namespace fostlib {
 
         /// ### Substrings and slicing
         string substr() const { return *this; }
-        string substr(size_type b) const { return f5::u8string::substr(b); }
+        string substr(size_type b) const {
+            return felspar::u8string::substr(b);
+        }
         string substr(size_type b, size_type c) const {
-            return f5::u8string::substr_pos(b, b + c);
+            return felspar::u8string::substr_pos(b, b + c);
         }
         char32_t at(size_type) const;
         char32_t operator[](size_type p) const { return at(p); }
@@ -217,20 +196,14 @@ namespace fostlib {
 
 
     /// ### Binary operators needed outside of the class
-    inline f5::u8string operator+(f5::u8view l, string const &r) {
-        return l + f5::u8view{r};
+    inline felspar::u8string operator+(felspar::u8view l, string const &r) {
+        return l + felspar::u8view{r};
     }
-    inline f5::u8string operator+(f5::u8string l, string const &r) {
-        return f5::u8view{l} + f5::u8view{r};
+    inline felspar::u8string operator+(felspar::u8string l, string const &r) {
+        return felspar::u8view{l} + felspar::u8view{r};
     }
-    inline bool operator<(nliteral l, const string &r) {
-        return f5::u8view{l, std::strlen(l)} < r;
-    }
-    inline bool operator<=(nliteral l, const string &r) { return not(r < l); }
-    inline bool operator>(nliteral l, const string &r) { return r <= l; }
-    inline bool operator>=(nliteral l, const string &r) { return not(l < r); }
     inline string operator+(nliteral l, const string &r) {
-        return f5::u8view{l, std::strlen(l)} + r;
+        return felspar::u8view{l, std::strlen(l)} + r;
     }
 
 

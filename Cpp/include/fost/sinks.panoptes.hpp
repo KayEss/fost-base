@@ -1,11 +1,3 @@
-/**
-    Copyright 2016-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #pragma once
 
 
@@ -25,7 +17,7 @@ namespace fostlib {
             /// The file name for the specified log file
             class archive_pathname {
                 /// Folder we save the log files into
-                fostlib::fs::path logfile_directory;
+                std::filesystem::path logfile_directory;
                 /// The module part of the file name
                 const module *modulep;
                 /// The file size (beyond which) we will rotate the log files
@@ -34,13 +26,14 @@ namespace fostlib {
                 /// Structure for storing information about the current logfile
                 struct fileloc_type {
                     fostlib::date date;
-                    fostlib::fs::path pathname;
+                    std::filesystem::path pathname;
                 };
                 /// The current log file name and its date
                 fostlib::nullable<fileloc_type> fileloc;
 
                 /// Generate an archive file name to use
-                fileloc_type pathname(const fostlib::timestamp &) const;
+                fileloc_type
+                        pathname(std::chrono::system_clock::time_point) const;
 
               public:
                 /// Construct an archive for the default data stream
@@ -54,7 +47,8 @@ namespace fostlib {
                 const fostlib::jcursor &meta_db_path() const;
 
                 /// Return the file name for the given timestamp
-                fostlib::fs::path operator()(const fostlib::timestamp &);
+                std::filesystem::path
+                        operator()(std::chrono::system_clock::time_point);
 
                 /// Return true if the file needs to be rotated
                 bool rotate(uintmax_t);

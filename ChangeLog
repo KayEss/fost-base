@@ -1,3 +1,34 @@
+2021-12-01  Sukit Saeo  <sukit.s@biggestfan.net>
+ Added coercion between `felspar::memory::holding_pen` and JSON.
+
+2021-01-29  Kirit Saelensminde  <kirit@felspar.com>
+ Allow forcing a performance counter value to a given one.
+
+2021-01-19  Kirit Saelensminde  <kirit@felspar.com>
+ Coercions can now capture the source location they are called from.
+
+2020-12-18  Kirit Saelensminde  <kirit@felspar.com>
+ The not_implemented exception no longer takes a function name as the first argument.
+
+2020-11-22  Kirit Saelensminde  <kirit@felspar.com>
+ Remove all threading, futures and worker pool implementations. This turns the logging into no-ops.
+
+2020-11-20  Kirit Saelensminde  <kirit@felspar.com>
+ Exceptions capture their throw site location.
+
+2020-11-14  Kirit Saelensminde  <kirit@felspar.com>
+ Exception messages are now `felspar::u8view`. This is a breaking change for any user-defined exceptions
+
+2020-09-21  Kirit Saelensminde  <kirit@felspar.com>
+ * Remove all of `fostlib::fs` as `std::filesystem` is now available.
+ * Add an `array` method to the `json` type to return the held array.
+
+2020-09-09  Kirit Saelensminde  <kirit@felspar.com>
+ Add way to get performance counters as structured data.
+
+2020-06-24  Kirit Saelensminde  <kirit@felspar.com>
+ Add `sha1_into` to allow avoid a memory allocation
+
 2020-06-24  Kirit Saelensminde  <kirit@felspar.com>
  Removed deprecated APIs.
 

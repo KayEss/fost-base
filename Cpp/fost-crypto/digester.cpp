@@ -1,11 +1,3 @@
-/**
-    Copyright 2009-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-crypto.hpp"
 #include <fost/progress>
 #include <fost/unicode>
@@ -15,12 +7,10 @@
 #include <fstream>
 #include <fost/filesystem.hpp>
 
-#include <crypto++/keccak.h>
-#include <crypto++/ripemd.h>
-#include <crypto++/sha.h>
-
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 #include <crypto++/md5.h>
+#include <crypto++/ripemd.h>
+#include <crypto++/sha.h>
 
 
 struct fostlib::digester::impl {
@@ -57,8 +47,6 @@ fostlib::digester::digester(digester_fn hash) {
         m_implementation = std::make_unique<hash_impl<CryptoPP::SHA256>>();
     } else if (hash == fostlib::ripemd256) {
         m_implementation = std::make_unique<hash_impl<CryptoPP::RIPEMD256>>();
-    } else if (hash == fostlib::keccak256) {
-        m_implementation = std::make_unique<hash_impl<CryptoPP::Keccak_256>>();
     } else if (hash == fostlib::md5) {
         m_implementation = std::make_unique<hash_impl<CryptoPP::Weak::MD5>>();
     } else {
@@ -66,8 +54,7 @@ fostlib::digester::digester(digester_fn hash) {
                 "fostlib::digester::digester( fostlib::string (*)( const "
                 "fostlib::string & ) )"
                 "with other hash functions",
-                "Only keccak-256, sha1, sha256, ripemd256 and md5 are "
-                "supported right now");
+                "Only sha1, sha256, ripemd256 and md5 are supported right now");
     }
 }
 
@@ -100,7 +87,7 @@ fostlib::digester &fostlib::digester::operator<<(const const_memory_block &p) {
 }
 
 
-fostlib::digester &fostlib::digester::operator<<(f5::u8view const s) {
+fostlib::digester &fostlib::digester::operator<<(felspar::u8view const s) {
     fostlib::digester::impl::check(m_implementation.get());
     m_implementation->update(
             reinterpret_cast<const unsigned char *>(s.memory().data()),
@@ -110,16 +97,15 @@ fostlib::digester &fostlib::digester::operator<<(f5::u8view const s) {
 
 
 fostlib::digester &
-        fostlib::digester::operator<<(const fostlib::fs::path &filename) {
+        fostlib::digester::operator<<(std::filesystem::path const &filename) {
     fostlib::digester::impl::check(m_implementation.get());
     fostlib::progress progress(filename);
-    fostlib::ifstream file(filename, std::ios::binary);
-    while (!file.eof() && file.good()) {
-        boost::array<char, 4096> buffer;
-        file.read(buffer.c_array(), buffer.size());
+    std::ifstream file(filename, std::ios::binary);
+    while (not file.eof() && file.good()) {
+        std::array<char, 4096> buffer;
+        file.read(buffer.data(), buffer.size());
         const std::size_t read(file.gcount());
-        (*this) << const_memory_block(
-                buffer.c_array(), buffer.c_array() + read);
+        (*this) << const_memory_block(buffer.data(), buffer.data() + read);
         progress += read;
     }
     return *this;

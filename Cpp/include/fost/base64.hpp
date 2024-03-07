@@ -1,20 +1,9 @@
-/**
-    Copyright 2009-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_DETAIL_BASE64_HPP
 #define FOST_DETAIL_BASE64_HPP
 #pragma once
 
 
 #include <fost/tagged-string.hpp>
-
-#include <boost/array.hpp>
-#include <boost/range/functions.hpp>
 
 
 namespace fostlib {
@@ -47,8 +36,8 @@ namespace fostlib {
         }
     };
     template<std::size_t N>
-    struct coercer<base64_string, std::array<f5::byte, N>> {
-        base64_string coerce(const std::array<f5::byte, N> &a) {
+    struct coercer<base64_string, std::array<felspar::byte, N>> {
+        base64_string coerce(const std::array<felspar::byte, N> &a) {
             const auto *pos = reinterpret_cast<const unsigned char *>(a.data());
             fostlib::base64_string ret;
             auto length = N;
@@ -73,6 +62,13 @@ namespace fostlib {
     struct coercer<string, base64_string> {
         string coerce(const base64_string &h) {
             return fostlib::coerce<string>(h.underlying());
+        }
+    };
+
+    template<>
+    struct coercer<base64_string, json> {
+        base64_string coerce(json const &j) {
+            return base64_string{fostlib::coerce<string>(j)};
         }
     };
 

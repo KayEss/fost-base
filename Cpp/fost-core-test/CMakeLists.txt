@@ -1,12 +1,10 @@
 if(TARGET stress)
-    add_library(fost-core-test STATIC EXCLUDE_FROM_ALL
+    add_test_run(stress fost-core fost-cli TESTS
             dynlib.cpp
             settings.cpp
             thread.cpp
             workerpool.cpp
         )
-    target_link_libraries(fost-core-test fost-core)
-    stress_test(fost-core-test)
 
     add_executable(fost-core-test-fileio EXCLUDE_FROM_ALL
             file-io.cpp

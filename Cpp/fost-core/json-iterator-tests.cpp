@@ -1,11 +1,3 @@
-/**
-    Copyright 1999-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core-test.hpp"
 #include <fost/unicode>
 
@@ -31,7 +23,7 @@ FSL_TEST_FUNCTION(key_object) {
     jcursor("key2").insert(object, "value2");
     json::const_iterator p = object.begin();
     FSL_CHECK_EQ(*p, json("value1"));
-    FSL_CHECK_EQ(p->get<f5::u8view>().value(), "value1");
+    FSL_CHECK_EQ(p->get<felspar::u8view>().value(), "value1");
     FSL_CHECK_EQ(p.key(), json("key1"));
     FSL_CHECK_NOTHROW(++p);
     FSL_CHECK_EQ(*p, json("value2"));

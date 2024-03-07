@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-crypto-test.hpp"
 #include <fost/crypto>
 
@@ -18,7 +10,7 @@ FSL_TEST_SUITE(crypto);
 
 FSL_TEST_FUNCTION(compare) {
     fostlib::string s1("ABC");
-    f5::u8view s2("ABC");
+    felspar::u8view s2("ABC");
 
     FSL_CHECK(fostlib::crypto_compare(s1, s2));
 }

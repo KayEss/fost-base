@@ -1,11 +1,3 @@
-/**
-    Copyright 2016-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-crypto-test.hpp"
 #include <fost/crypto>
 
@@ -22,7 +14,7 @@ FSL_TEST_SUITE(jwt);
 FSL_TEST_FUNCTION(hs256_empty_mint) {
     fostlib::jwt::mint minter(fostlib::jwt::alg::HS256);
     FSL_CHECK_EQ(
-            minter.token(f5::u8view{"secret"}.memory()),
+            minter.token(felspar::u8view{"secret"}.memory()),
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
             "e30."
             "t-IDcSemACt8x4iTMCda8Yhe3iZaWbvV5XKSTbuAn0M");
@@ -43,7 +35,7 @@ FSL_TEST_FUNCTION(hs256_sub) {
     fostlib::jwt::mint minter(fostlib::jwt::alg::HS256);
     minter.subject("hello");
     FSL_CHECK_EQ(
-            minter.token(f5::u8view{"secret"}.memory()),
+            minter.token(felspar::u8view{"secret"}.memory()),
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
             "eyJzdWIiOiJoZWxsbyJ9."
             "YMxTsTS6Ndzb9IXjVoGrSrYcIFVd09WtLufoQjAGkaw");
@@ -57,7 +49,7 @@ FSL_TEST_FUNCTION(hs256_claim) {
     fostlib::push_back(groups, "g2");
     minter.claim("http://example.com/groups", groups);
     FSL_CHECK_EQ(
-            minter.token(f5::u8view{"secret"}.memory()),
+            minter.token(felspar::u8view{"secret"}.memory()),
             "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
             "eyJodHRwOi8vZXhhbXBsZS5jb20vZ3JvdXBzIjpbImcxIiwiZzIiXX0."
             "04gmC8hnktHdDJjCmrON637xAW7jhF86IhqeZUv7Wwg");

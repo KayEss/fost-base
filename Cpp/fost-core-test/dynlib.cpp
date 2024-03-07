@@ -1,14 +1,7 @@
-/**
-    Copyright 2012-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core-test.hpp"
 
 #include <fost/dynlib>
+#include <fost/main>
 
 
 namespace {
@@ -21,5 +14,6 @@ FSL_TEST_SUITE(dynlib);
 
 
 FSL_TEST_FUNCTION(datetime) {
+    fostlib::ini_file base_settings_file("/etc/fost.conf");
     FSL_CHECK_NOTHROW(fostlib::dynlib(c_loadlib.value()));
 }

@@ -1,11 +1,3 @@
-/**
-    Copyright 2015-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #pragma once
 
 
@@ -74,7 +66,7 @@ namespace fostlib {
 
         /// Decode up to 8 characters of input and return up to 5 bytes of output
         std::pair<std::array<unsigned char, 5>, std::size_t>
-                decode_b32_5bytes(const char alphabet[34], f5::u8view a);
+                decode_b32_5bytes(const char alphabet[34], felspar::u8view a);
 
 
     }
@@ -98,9 +90,9 @@ namespace fostlib {
     template<const char A[34], std::size_t N>
     struct coercer<
             tagged_string<base32_string_tag<A>, ascii_string>,
-            std::array<f5::byte, N>> {
+            std::array<felspar::byte, N>> {
         tagged_string<base32_string_tag<A>, ascii_string>
-                coerce(std::array<f5::byte, N> m) {
+                coerce(std::array<felspar::byte, N> m) {
             return fostlib::coerce<
                     tagged_string<base32_string_tag<A>, ascii_string>>(
                     array_view<const unsigned char>(
@@ -113,9 +105,10 @@ namespace fostlib {
     template<const char A[34]>
     struct coercer<
             tagged_string<base32_string_tag<A>, ascii_string>,
-            f5::lstring,
+            felspar::lstring,
             std::enable_if_t<true>> {
-        tagged_string<base32_string_tag<A>, ascii_string> coerce(f5::lstring m) {
+        tagged_string<base32_string_tag<A>, ascii_string>
+                coerce(felspar::lstring m) {
             return fostlib::coerce<
                     tagged_string<base32_string_tag<A>, ascii_string>>(
                     array_view<const unsigned char>(m));
@@ -130,7 +123,7 @@ namespace fostlib {
             tagged_string<base32_string_tag<A>, ascii_string>> {
         std::vector<unsigned char> coerce(
                 const tagged_string<base32_string_tag<A>, ascii_string> &s) {
-            f5::u8view b{s};
+            felspar::u8view b{s};
             std::vector<unsigned char> v;
             for (auto d = detail::decode_b32_5bytes(A, b); d.second;
                  b = b.substr(8), d = detail::decode_b32_5bytes(A, b)) {

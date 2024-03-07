@@ -1,11 +1,3 @@
-/**
-    Copyright 2016-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/json-order.hpp>
 
@@ -48,13 +40,13 @@ namespace {
         }
     };
     struct compare_u8view {
-        f5::u8view left;
-        compare_u8view(f5::u8view l) : left(l) {}
+        felspar::u8view left;
+        compare_u8view(felspar::u8view l) : left(l) {}
         template<typename O>
         bool operator()(const O &) const {
             return false;
         }
-        bool operator()(f5::lstring right) const { return left < right; }
+        bool operator()(felspar::lstring right) const { return left < right; }
         bool operator()(fostlib::json::string_t const &right) const {
             return left < right;
         }
@@ -112,7 +104,7 @@ namespace {
         bool operator()(const double left) const {
             return right.apply_visitor(::compare_double(left));
         }
-        bool operator()(f5::lstring left) const {
+        bool operator()(felspar::lstring left) const {
             return right.apply_visitor(::compare_u8view(left));
         }
         bool operator()(const fostlib::json::string_t &left) const {

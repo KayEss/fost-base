@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_JSON_CORE_HPP
 #define FOST_JSON_CORE_HPP
 #pragma once
@@ -34,7 +26,7 @@ namespace fostlib {
         friend class jcursor;
 
       public:
-        using string_t = f5::u8string;
+        using string_t = felspar::u8string;
         using array_t = json_array;
         using array_p = std::shared_ptr<array_t>;
         using object_t = json_object;
@@ -44,7 +36,7 @@ namespace fostlib {
                 bool,
                 int64_t,
                 double,
-                f5::lstring,
+                felspar::lstring,
                 string_t,
                 array_p,
                 object_p>;
@@ -57,7 +49,7 @@ namespace fostlib {
       private:
         element_t m_element;
         /// Raise a `json_error` instance
-        [[noreturn]] void raise(f5::lstring msg) const;
+        [[noreturn]] void raise(felspar::lstring msg) const;
 
       public:
         /// Default construct to null
@@ -66,19 +58,20 @@ namespace fostlib {
         explicit json(std::monostate) : m_element() {}
         explicit json(bool b) : m_element(b) {}
         template<typename I>
-        json(I i,
-             std::enable_if_t<std::is_integral<I>::value, void *> = nullptr)
+        explicit json(
+                I i,
+                std::enable_if_t<std::is_integral<I>::value, void *> = nullptr)
         : m_element(coerce<int64_t>(i)) {}
         explicit json(double d) : m_element(d) {}
         explicit json(const char *s) : m_element(string_t{s}) {}
         explicit json(string s) : m_element(s.u8string_transition()) {}
         explicit json(string_t s) : m_element(std::move(s)) {}
-        json(f5::lstring s) : m_element(s) {}
-        json(f5::u8view s) : m_element(string_t{s}) {}
+        json(felspar::lstring s) : m_element(s) {}
+        json(felspar::u8view s) : m_element(string_t{s}) {}
 
         template<std::size_t N>
         json(char16_t const (&s)[N])
-        : m_element{coerce<f5::u8string>(f5::u16view{s})} {}
+        : m_element{coerce<felspar::u8string>(felspar::u16view{s})} {}
 
         json(const array_t &a) : m_element(std::make_shared<array_t>(a)) {}
         json(array_t &&a)
@@ -88,12 +81,14 @@ namespace fostlib {
         : m_element(std::make_shared<object_t>(std::move(o))) {}
 
         template<typename T>
+        requires requires(T t, json j) { {j = t}; }
         json(const nullable<T> &t) : m_element() {
             if (t) *this = t.value();
         }
         template<typename T>
+        requires requires(T t, element_t j) { {j = std::move(t)}; }
         json(nullable<T> &&t) : m_element() {
-            if (t) m_element = std::move(t.value());
+            if (t) m_element = std::move(*t);
         }
 
         bool isnull() const;
@@ -104,10 +99,10 @@ namespace fostlib {
         array_t::size_type size() const;
 
         bool has_key(array_t::size_type p) const;
-        bool has_key(f5::u8view) const;
+        bool has_key(felspar::u8view) const;
         bool has_key(const jcursor &p) const;
         bool has_key(nliteral n) const {
-            return has_key(f5::u8view{n, std::strlen(n)});
+            return has_key(felspar::u8view{n, std::strlen(n)});
         }
         const json &operator[](nliteral n) const { return (*this)[string(n)]; }
         const json &operator[](const string &k) const;
@@ -122,7 +117,7 @@ namespace fostlib {
         /// Fetch a value of the specified atomic type. Note that there may be
         /// multiple types that are used for a single logical JSON type, for
         /// example strings can be `std::shared_ptr<fostlib::string>` or they
-        /// can be `f5::lstring`. Only an exact match will be returned.
+        /// can be `felspar::lstring`. Only an exact match will be returned.
         template<typename T>
         nullable<T> get() const {
             const T *p = std::get_if<T>(&m_element);
@@ -141,10 +136,19 @@ namespace fostlib {
         /// Return an object if this is a JSON object
         const json_object &object() const {
             auto o = get<object_p>();
-            if (o)
+            if (o) {
                 return **o;
-            else
+            } else {
                 raise("This JSON value is not an object");
+            }
+        }
+        const json_array &array() const {
+            auto a = get<array_p>();
+            if (a) {
+                return **a;
+            } else {
+                raise("This JSON value is not an array");
+            }
         }
 
         /// Assignment from a nullable value follows assignment rules
@@ -171,7 +175,7 @@ namespace fostlib {
             m_element = string_t{s};
             return *this;
         }
-        json &operator=(f5::u8string const s) {
+        json &operator=(felspar::u8string const s) {
             m_element = std::move(s);
             return *this;
         }
@@ -210,11 +214,25 @@ namespace fostlib {
         }
 
         /// Equality checking
-        bool operator==(const json &r) const;
-        bool operator==(f5::u8view) const;
-        template<typename V>
-        bool operator!=(V &&r) const {
-            return not this->operator==(std::forward<V>(r));
+        bool operator==(json const &) const;
+        bool operator==(felspar::u8view) const;
+        template<std::size_t N>
+        bool operator==(char const (&s)[N]) const {
+            return this->operator==(felspar::u8view{s});
+        }
+        bool operator==(bool r) const { return this->operator==(json{r}); }
+        template<
+                typename I,
+                std::enable_if_t<std::is_integral<I>::value, void *> = nullptr>
+        bool operator==(I r) const {
+            return this->operator==(json{r});
+        }
+        template<
+                typename I,
+                std::enable_if_t<std::is_floating_point<I>::value, void *> =
+                        nullptr>
+        bool operator==(I r) const {
+            return this->operator==(json{r});
         }
 
         class FOST_CORE_DECLSPEC const_iterator {
@@ -277,25 +295,25 @@ namespace fostlib {
             Parse a JSON string returning the content. Throws on parse
             error.
         */
-        static json parse(f5::u8view b);
+        static json parse(felspar::u8view b);
         /// Parse a JSON string returning the content. Returns def on
         /// parse error
         static json parse(const string &, const json &def);
         /// Overloads to handle various other types we may want to parse
-        static json parse(f5::buffer<unsigned char const> b) {
-            return parse(f5::u8view{
+        static json parse(felspar::buffer<unsigned char const> b) {
+            return parse(felspar::u8view{
                     reinterpret_cast<char const *>(b.data()), b.size()});
         }
         static json parse(char const *l) { return parse(string(l)); }
-        static json parse(f5::u16view);
+        static json parse(felspar::u16view);
 
-        static json sloppy_parse(f5::u8view b);
+        static json sloppy_parse(felspar::u8view b);
         /// Parse a JSON string which could contains comment and returning the
         /// content. Returns def on parse error
         static json sloppy_parse(const string &, const json &def);
         /// Overloads to handle various other types we may want to parse
-        static json sloppy_parse(f5::buffer<unsigned char const> b) {
-            return sloppy_parse(f5::u8view{
+        static json sloppy_parse(felspar::buffer<unsigned char const> b) {
+            return sloppy_parse(felspar::u8view{
                     reinterpret_cast<char const *>(b.data()), b.size()});
         }
         static json sloppy_parse(char const *l) {

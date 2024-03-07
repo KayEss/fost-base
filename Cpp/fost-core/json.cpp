@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/json.hpp>
 #include <fost/detail/coerce.hpp>
@@ -24,7 +16,7 @@
 using namespace fostlib;
 
 
-void fostlib::json::raise(f5::lstring msg) const {
+void fostlib::json::raise(felspar::lstring msg) const {
     throw exceptions::json_error(msg, *this);
 }
 
@@ -130,8 +122,8 @@ bool fostlib::json::operator==(const json &r) const {
 
 namespace {
     struct comparator_string {
-        f5::u8view with;
-        bool operator()(f5::lstring s) { return s == with; }
+        felspar::u8view with;
+        bool operator()(felspar::lstring s) { return s == with; }
         bool operator()(json::string_t const &s) { return s == with; }
         template<typename T>
         bool operator()(const T &) {
@@ -139,7 +131,7 @@ namespace {
         }
     };
 }
-bool fostlib::json::operator==(f5::u8view v) const {
+bool fostlib::json::operator==(felspar::u8view v) const {
     return std::visit(::comparator_string{v}, m_element);
 }
 
@@ -184,8 +176,8 @@ bool fostlib::json::has_key(array_t::size_type k) const {
 
 namespace {
     struct object_has_key {
-        f5::u8view k;
-        object_has_key(f5::u8view k) : k(k) {}
+        felspar::u8view k;
+        object_has_key(felspar::u8view k) : k(k) {}
 
         bool operator()(const json::object_p &o) const {
             return o->find(k) != o->end();
@@ -197,7 +189,7 @@ namespace {
         }
     };
 }
-bool fostlib::json::has_key(f5::u8view k) const {
+bool fostlib::json::has_key(felspar::u8view k) const {
     return std::visit(::object_has_key(k), m_element);
 }
 
@@ -364,12 +356,10 @@ fostlib::json::const_iterator::const_iterator(
 namespace {
     struct iter_key {
         json operator()(std::monostate) const {
-            throw exceptions::not_implemented{
-                    __PRETTY_FUNCTION__, "for a null iterator"};
+            throw exceptions::not_implemented{"for a null iterator"};
         }
         json operator()(json::array_t::const_iterator const &) const {
-            throw exceptions::not_implemented{
-                    __PRETTY_FUNCTION__, "for an array iterator"};
+            throw exceptions::not_implemented{"for an array iterator"};
         }
         json operator()(const json::object_t::const_iterator &i) const {
             return json(i->first);

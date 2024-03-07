@@ -1,11 +1,3 @@
-/**
-    Copyright 2015-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include <string>
 
 #include <crypto++/config.h>
@@ -121,12 +113,12 @@ FSL_TEST_FUNCTION(load_valid_jwt) {
             "J1n3pIWk_dUZegpqx0Lka21H6XxUTxiy8OcaarA8zdnPUnV6AmNP3ecFawIFYdvJB_"
             "cm-GvpCSbr8G8y_Mllj8f4x9nBH8pQux89_"
             "6gUY618iYv7tuPWBFfEbLxtF2pZS6YC1aSfLQxeNe8djT9YjpvRZA",
-            [](auto, auto) -> std::vector<f5::byte> {
-                std::vector<f5::byte> byte_n(
+            [](auto, auto) -> std::vector<felspar::byte> {
+                std::vector<felspar::byte> byte_n(
                         base64url_n.begin(), base64url_n.end());
-                std::vector<f5::byte> byte_e(
+                std::vector<felspar::byte> byte_e(
                         base64url_e.begin(), base64url_e.end());
-                byte_e.insert(byte_e.end(), f5::byte(0x00));
+                byte_e.insert(byte_e.end(), felspar::byte(0x00));
                 byte_e.insert(byte_e.end(), byte_n.begin(), byte_n.end());
                 return byte_e;
             });
@@ -146,12 +138,12 @@ FSL_TEST_FUNCTION(load_invalid_jwt) {
             "ZqkTRJzqJbYQpiX5UcCkB4bXWfhSZGCIEEGoWvTeCkqNYn6_"
             "XEmrH8f7GVO9m3vTFEsIyLPwxdwmJMSsbHvqpETJo4XBzniyq3S8HdThOhyWiYvTin"
             "kNi6FhI2tpza4AVWqo1rDG3GxqerA8JyvLnBkYePY3om_g",
-            [](auto, auto) -> std::vector<f5::byte> {
-                std::vector<f5::byte> byte_n(
+            [](auto, auto) -> std::vector<felspar::byte> {
+                std::vector<felspar::byte> byte_n(
                         base64url_n.begin(), base64url_n.end());
-                std::vector<f5::byte> byte_e(
+                std::vector<felspar::byte> byte_e(
                         base64url_e.begin(), base64url_e.end());
-                byte_e.insert(byte_e.end(), f5::byte(0x00));
+                byte_e.insert(byte_e.end(), felspar::byte(0x00));
                 byte_e.insert(byte_e.end(), byte_n.begin(), byte_n.end());
                 return byte_e;
             });

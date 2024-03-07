@@ -1,11 +1,3 @@
-/**
-    Copyright 2015-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-crypto.hpp"
 #include <fost/password.hpp>
 
@@ -20,7 +12,7 @@ namespace {
     template<typename R>
     void
             derive(R &result,
-                   f5::u8view password,
+                   felspar::u8view password,
                    const fostlib::array_view<const unsigned char> &salt,
                    std::size_t rounds) {
         CryptoPP::PKCS5_PBKDF2_HMAC<CryptoPP::SHA256> pbkdf2;
@@ -34,7 +26,7 @@ namespace {
 
 
 std::array<unsigned char, 64> fostlib::pbkdf2_hmac_sha256(
-        f5::u8view password,
+        felspar::u8view password,
         array_view<const unsigned char> salt,
         std::size_t rounds) {
     std::array<unsigned char, 64> result;
@@ -43,7 +35,7 @@ std::array<unsigned char, 64> fostlib::pbkdf2_hmac_sha256(
 }
 
 std::vector<unsigned char> fostlib::pbkdf2_hmac_sha256(
-        f5::u8view password,
+        felspar::u8view password,
         array_view<const unsigned char> salt,
         std::size_t rounds,
         std::size_t length) {

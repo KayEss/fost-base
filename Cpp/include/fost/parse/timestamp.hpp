@@ -1,11 +1,3 @@
-/**
-    Copyright 2017-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #pragma once
 
 
@@ -19,11 +11,15 @@ namespace fostlib {
 
     template<typename Iterator>
     struct rfc1123_timestamp_parser :
-    public boost::spirit::qi::
-            grammar<Iterator, timestamp(), decltype(boost::spirit::qi::space)> {
-        boost::spirit::qi::
-                rule<Iterator, timestamp(), decltype(boost::spirit::qi::space)>
-                        top;
+    public boost::spirit::qi::grammar<
+            Iterator,
+            std::chrono::system_clock::time_point(),
+            decltype(boost::spirit::qi::space)> {
+        boost::spirit::qi::rule<
+                Iterator,
+                std::chrono::system_clock::time_point(),
+                decltype(boost::spirit::qi::space)>
+                top;
         boost::spirit::qi::symbols<char, unsigned> weekday, month;
 
         rfc1123_timestamp_parser() : rfc1123_timestamp_parser::base_type(top) {

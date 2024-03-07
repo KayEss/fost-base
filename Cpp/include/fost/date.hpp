@@ -1,11 +1,3 @@
-/**
-    Copyright 2000-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_DETAIL_DATE_HPP
 #define FOST_DETAIL_DATE_HPP
 #pragma once
@@ -15,73 +7,52 @@
 #include <fost/string.hpp>
 #include <fost/timediff.hpp>
 
-
-namespace boost::gregorian {
-    inline auto operator==(
-            boost::gregorian::date::ymd_type l,
-            boost::gregorian::date::ymd_type r) {
-        return l.year == r.year && l.month == r.month && l.day == r.day;
-    }
-}
+#include <compare>
 
 
 namespace fostlib {
 
 
-    /// Stores a time and date together with a time zone. UTC is preferred.
-    class timestamp;
+    std::chrono::system_clock::time_point timestamp(
+            unsigned year,
+            unsigned month,
+            unsigned day,
+            unsigned hour = 0,
+            unsigned minute = 0,
+            unsigned seconds = 0,
+            unsigned us = 0);
 
 
-    /// A date in the Gregorian calandar
-    class FOST_CORE_DECLSPEC date : public rel_ops<date> {
-        boost::gregorian::date m_date;
-        friend class timestamp;
-        friend struct fostlib::coercer<boost::gregorian::date, date>;
+    /// A date in the Gregorian calendar
+    class FOST_CORE_DECLSPEC date {
+        days m_date;
 
       public:
         /// Construct an empty date
-        date() {}
-        /// Allow a date to be constructed from a Boost date
-        explicit date(boost::gregorian::date d) : m_date(d) {}
-        /// Pull the date part out of a timestamp (impl in timestamp.hpp)
-        explicit date(const timestamp &);
+        constexpr date() : m_date{} {}
+        /// Pull the date part out of a timestamp
+        constexpr explicit date(std::chrono::system_clock::time_point const t)
+        : m_date{std::chrono::duration_cast<days>(t.time_since_epoch())} {}
         /// Construct a date from year, month and day values
-        date(int year, int month, int day) : m_date(year, month, day) {}
+        date(unsigned year, unsigned month, unsigned day)
+        : date{timestamp(year, month, day)} {}
 
         /// Today (UTC)
-        static date today() {
-            return date(boost::gregorian::day_clock::universal_day());
-        }
+        static date today();
 
         /// Compare dates for equality
-        bool operator==(const date &d) const {
-            return (m_date.is_special() && d.m_date.is_special())
-                    || m_date.year_month_day() == d.m_date.year_month_day();
+        friend constexpr bool operator==(date l, date r) noexcept {
+            return l.m_date == r.m_date;
+        }
+        friend constexpr auto operator<=>(date l, date r) noexcept {
+            return l.m_date.count() <=> r.m_date.count();
         }
 
-        /// Compare two dates
-        bool operator<(const date &d) const { return m_date < d.m_date; }
-
-        /// Add days to a date
-        date operator+(const days &d) const { return date(m_date + d); }
-
-        /// Subtract days to a date
-        date operator-(const days &d) const { return date(m_date - d); }
+        constexpr std::time_t to_time_t() const noexcept {
+            return 60 * 60 * 24 * m_date.count();
+        }
     };
 
-
-    /// Allow a date to be coerced to a Boost date
-    template<>
-    struct coercer<boost::gregorian::date, date> {
-        /// Performs the coercions
-        boost::gregorian::date coerce(date d) { return d.m_date; }
-    };
-    /// Allow a date to be coerced from a Boost date.
-    template<>
-    struct FOST_CORE_DECLSPEC coercer<date, boost::gregorian::date> {
-        /// Performs the coercions
-        date coerce(boost::gregorian::date d) { return date(d); }
-    };
 
     /// Allow a date to be coerced to a string
     template<>
@@ -111,7 +82,7 @@ namespace std {
 
 
     /// Allow a date to be output to a stream
-    inline fostlib::ostream &operator<<(fostlib::ostream &o, fostlib::date d) {
+    inline std::ostream &operator<<(std::ostream &o, fostlib::date d) {
         return o << fostlib::coerce<fostlib::string>(d);
     }
 

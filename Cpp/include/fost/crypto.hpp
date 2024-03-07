@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_CRYPTO_HPP
 #define FOST_CRYPTO_HPP
 #pragma once
@@ -15,11 +7,12 @@
 #include <fost/filesystem.hpp>
 #include <fost/pointers>
 
+#include <fstream>
+#include <span>
+
 // TODO Older libc6-dev packages don't provide this header :(
 // This needs to be fixed using C++17's `__has_include`
 // #include <sys/random.h>
-
-#include <span>
 
 
 namespace fostlib {
@@ -44,7 +37,7 @@ namespace fostlib {
                         right.length()));
     }
     /// Allow comparison of strings
-    inline bool crypto_compare(f5::u8view left, f5::u8view right) {
+    inline bool crypto_compare(felspar::u8view left, felspar::u8view right) {
         return crypto_compare(
                 array_view<const unsigned char>(left),
                 array_view<const unsigned char>(right));
@@ -54,14 +47,15 @@ namespace fostlib {
     inline bool crypto_compare(
             const tagged_string<T, U> &left, const tagged_string<T, U> &right) {
         return crypto_compare(
-                static_cast<f5::u8view>(left), static_cast<f5::u8view>(right));
+                static_cast<felspar::u8view>(left),
+                static_cast<felspar::u8view>(right));
     }
 
 
     /// Return the requested number of cryptographically secure random bytes
     template<std::size_t N>
-    std::array<f5::byte, N> crypto_bytes() {
-        std::array<f5::byte, N> buffer;
+    std::array<felspar::byte, N> crypto_bytes() {
+        std::array<felspar::byte, N> buffer;
         std::ifstream urandom("/dev/urandom");
         urandom.read(reinterpret_cast<char *>(buffer.data()), buffer.size());
         // TODO Until we can check for the presence of the sys/random.h
@@ -73,14 +67,18 @@ namespace fostlib {
 
 
     /// ## Cryptographic hashing functions
-    FOST_CRYPTO_DECLSPEC string md5(const f5::u8view &);
-    FOST_CRYPTO_DECLSPEC string sha1(const f5::u8view &);
-    FOST_CRYPTO_DECLSPEC string sha256(const f5::u8view &);
-    FOST_CRYPTO_DECLSPEC string ripemd256(const f5::u8view &);
-    FOST_CRYPTO_DECLSPEC string keccak256(const f5::u8view &);
+    FOST_CRYPTO_DECLSPEC string md5(const felspar::u8view &);
+    FOST_CRYPTO_DECLSPEC string sha1(const felspar::u8view &);
+    FOST_CRYPTO_DECLSPEC string sha256(const felspar::u8view &);
+    FOST_CRYPTO_DECLSPEC string ripemd256(const felspar::u8view &);
+
+    void sha1_into(
+            std::span<const unsigned char> data,
+            std::span<unsigned char, 20> into);
+
 
     /// The type of a digester used as an argument
-    using digester_fn = string (*)(const f5::u8view &);
+    using digester_fn = string (*)(const felspar::u8view &);
 
 
     /// Generic digester for hash algorithms.
@@ -101,18 +99,19 @@ namespace fostlib {
                 return *this;
             }
         }
-        digester &operator<<(std::span<std::byte const> s) {
-            return *this << const_memory_block(s.data(), s.data() + s.size());
+        digester &operator<<(felspar::u8view);
+        digester &operator<<(std::string_view sv) {
+            return *this << const_memory_block{
+                           sv.data(), sv.data() + sv.size()};
         }
-        digester &operator<<(f5::u8view);
         digester &operator<<(string const &str) {
-            return *this << f5::u8view{str};
+            return *this << felspar::u8view{str};
         }
         template<std::size_t N>
         digester &operator<<(char const (&s)[N]) {
-            return *this << f5::u8view{s};
+            return *this << felspar::u8view{s};
         }
-        digester &operator<<(const fostlib::fs::path &filename);
+        digester &operator<<(std::filesystem::path const &filename);
 
         std::vector<unsigned char> digest() const;
 
@@ -130,12 +129,12 @@ namespace fostlib {
     class FOST_CRYPTO_DECLSPEC hmac {
       public:
         /// Construct a HMAC with the given digest and secret
-        hmac(digester_fn, f5::buffer<const f5::byte>);
+        hmac(digester_fn, felspar::buffer<const felspar::byte>);
         hmac(digester_fn d, const string &key)
-        : hmac(d, f5::buffer<const f5::byte>{f5::u8view{key}}) {}
+        : hmac(d, felspar::buffer<const felspar::byte>{felspar::u8view{key}}) {}
         hmac(digester_fn d, const void *key, std::size_t key_length)
         : hmac(d,
-               f5::buffer<const f5::byte>(
+               felspar::buffer<const felspar::byte>(
                        reinterpret_cast<unsigned char const *>(key),
                        key_length)) {}
         template<std::size_t N>
@@ -158,8 +157,8 @@ namespace fostlib {
         hmac &operator<<(fostlib::nliteral n) {
             return *this << fostlib::utf8_string(n);
         }
-        hmac &operator<<(f5::u8view);
-        hmac &operator<<(const fostlib::fs::path &filename);
+        hmac &operator<<(felspar::u8view);
+        hmac &operator<<(std::filesystem::path const &filename);
 
         std::vector<unsigned char> digest() const;
 

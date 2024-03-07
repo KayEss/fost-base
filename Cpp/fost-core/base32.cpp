@@ -1,11 +1,3 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/base32.hpp>
 
@@ -50,9 +42,7 @@ std::string &fostlib::detail::encode_b32_5bytes(
         into += alphabet[(buffer << 3) & 0x1f];
         into += '=';
         break;
-    default:
-        throw fostlib::exceptions::not_implemented(
-                __func__, "Left over bits", bits);
+    default: throw fostlib::exceptions::not_implemented{"Left over bits", bits};
     }
     return into;
 }
@@ -60,9 +50,9 @@ std::string &fostlib::detail::encode_b32_5bytes(
 
 std::pair<std::array<unsigned char, 5>, std::size_t>
         fostlib::detail::decode_b32_5bytes(
-                const char alphabet[34], f5::u8view u8v) {
+                const char alphabet[34], felspar::u8view u8v) {
     if (not u8v.bytes()) return {};
-    f5::cord::const_u8buffer a{u8v};
+    auto a{u8v.memory()};
     std::array<unsigned char, 5> output{};
     std::size_t bytes{}, bits{}, pos{};
     uint16_t buffer{};

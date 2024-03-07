@@ -1,19 +1,11 @@
-/**
-    Copyright 2015-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/counter.hpp>
-#include <f5/threading/set.hpp>
+#include <felspar/threading/set.hpp>
 
 
 namespace {
     auto &counters() {
-        static f5::tsset<const fostlib::performance *> c_counters;
+        static felspar::threading::tsset<const fostlib::performance *> c_counters;
         return c_counters;
     }
 }
@@ -46,4 +38,15 @@ fostlib::json fostlib::performance::current() {
         if (value) (v->parent->as_jcursor() / v->path).insert(ret, value);
     });
     return ret;
+}
+auto fostlib::performance::values()
+        -> std::vector<std::pair<jcursor, int64_t>> {
+    std::vector<std::pair<jcursor, int64_t>> values;
+    counters().for_each([&values](auto v) {
+        auto const value = v->value();
+        if (value) {
+            values.emplace_back(v->parent->as_jcursor() / v->rel_path(), value);
+        }
+    });
+    return values;
 }

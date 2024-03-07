@@ -1,15 +1,8 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core-test.hpp"
 #include <fost/unicode>
 
-using namespace f5::literals;
+
+using namespace felspar::literals;
 
 
 FSL_TEST_SUITE(json_atom);
@@ -122,6 +115,17 @@ FSL_TEST_FUNCTION(equality) {
     FSL_CHECK_EQ(v6, v6);
     FSL_CHECK_EQ(v7, v7);
     FSL_CHECK_EQ(v8, v8);
+
+    FSL_CHECK_EQ(v0, fostlib::json{});
+    FSL_CHECK_EQ(v1, fostlib::json{true});
+    FSL_CHECK_EQ(v1, true);
+    FSL_CHECK_EQ(v2, 10);
+    FSL_CHECK_EQ(v3, "true");
+    FSL_CHECK_EQ(v4, "10");
+    FSL_CHECK_EQ(v5, felspar::u8string{"0"});
+    FSL_CHECK_EQ(v6, fostlib::string{"Hello world!"});
+    FSL_CHECK_EQ(v7, 1.0f);
+    FSL_CHECK_EQ(v8, 3.141);
 
     FSL_CHECK_NEQ(v0, v1);
     FSL_CHECK_NEQ(v0, v2);

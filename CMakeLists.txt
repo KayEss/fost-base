@@ -6,10 +6,9 @@ set(CMAKE_INSTALL_PREFIX ../dist
 set(BUILD_SHARED_LIBS ON
     CACHE BOOL "Build shared libraries")
 
-include(./smoke_test.cmake)
-include(./stress_test.cmake)
 if(TARGET stress)
     set_property(TARGET stress PROPERTY EXCLUDE_FROM_ALL TRUE)
 endif()
 
 add_subdirectory(Cpp)
+add_subdirectory(Examples)

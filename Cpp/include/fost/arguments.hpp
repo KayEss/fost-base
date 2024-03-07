@@ -1,11 +1,3 @@
-/**
-    Copyright 1995-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_ARGUMENTS_HPP
 #define FOST_ARGUMENTS_HPP
 #pragma once
@@ -77,7 +69,7 @@ namespace fostlib {
         std::map<string, string> m_environment;
         std::vector<string> m_arguments;
         std::map<string, string> m_switches;
-        std::list<boost::shared_ptr<setting<json>>> m_registered;
+        std::vector<std::shared_ptr<setting<json>>> m_registered;
     };
 
 

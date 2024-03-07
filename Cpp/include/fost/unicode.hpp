@@ -1,17 +1,9 @@
-/**
-    Copyright 2001-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_UNICODE_HPP
 #define FOST_UNICODE_HPP
 #pragma once
 
 
-#include <f5/cord/unicode.hpp>
+#include <felspar/cord/unicode.hpp>
 #include <fost/array>
 #include <fost/file.hpp>
 #include <fost/tagged-string.hpp>
@@ -30,9 +22,9 @@ namespace fostlib {
 
         // Checks that a given utf32 character is valid - throws an exception if
         // it isn't
-        inline utf32 assertValid(utf32 codepoint) {
+        inline char32_t assertValid(char32_t codepoint) {
             try {
-                f5::cord::check_valid<fostlib::exceptions::unicode_encoding>(
+                felspar::cord::check_valid<fostlib::exceptions::unicode_encoding>(
                         codepoint);
                 return codepoint;
             } catch (fostlib::exceptions::unicode_encoding &e) {
@@ -52,8 +44,8 @@ namespace fostlib {
         // or string
         inline std::size_t utf8length(utf32 codepoint) {
             try {
-                return f5::cord::u8length<fostlib::exceptions::unicode_encoding>(
-                        codepoint);
+                return felspar::cord::u8length<
+                        fostlib::exceptions::unicode_encoding>(codepoint);
             } catch (fostlib::exceptions::unicode_encoding &e) {
                 const static jcursor pos("code-point", "utf-32");
                 pos.insert(e.data(), codepoint);
@@ -70,9 +62,8 @@ namespace fostlib {
         /// enough)
         inline std::size_t encode(utf32 ch, utf8 *begin, const utf8 *end) {
             try {
-                const auto bytes =
-                        f5::cord::u8encode<fostlib::exceptions::unicode_encoding>(
-                                ch);
+                const auto bytes = felspar::cord::u8encode<
+                        fostlib::exceptions::unicode_encoding>(ch);
                 if (begin + bytes.first <= end) {
                     for (auto b = 0; b != bytes.first; ++b, ++begin) {
                         *begin = bytes.second[b];
@@ -106,13 +97,13 @@ namespace fostlib {
 
     /// Allow us to coerce a UTF8 sequence to a UTF16 std::wstring
     template<>
-    struct FOST_CORE_DECLSPEC coercer<std::wstring, f5::u8view> {
-        std::wstring coerce(f5::u8view);
+    struct FOST_CORE_DECLSPEC coercer<std::wstring, felspar::u8view> {
+        std::wstring coerce(felspar::u8view);
     };
-    /// Turn a f5::u8view into JSON
+    /// Turn a felspar::u8view into JSON
     template<>
-    struct coercer<json, f5::u8view> {
-        json coerce(f5::u8view str) {
+    struct coercer<json, felspar::u8view> {
+        json coerce(felspar::u8view str) {
             return json(string(str.begin(), str.end()));
         }
     };
@@ -120,44 +111,33 @@ namespace fostlib {
 
     /// Convert between Unicode encodings
     template<>
-    struct coercer<f5::u8string, f5::u16view> {
-        f5::u8string coerce(f5::u16view const s) {
+    struct coercer<felspar::u8string, felspar::u16view> {
+        felspar::u8string coerce(felspar::u16view const s) {
             std::string ret;
             ret.reserve(s.memory().size()); // Minimum valid reservation
             for (char32_t cp : s) {
-                auto const encoded = f5::cord::u8encode(cp);
+                auto const encoded = felspar::cord::u8encode(cp);
                 ret.append(encoded.second.data(), encoded.first);
             }
-            return f5::u8string{std::move(ret)};
+            return felspar::u8string{std::move(ret)};
         }
     };
 
     /// Implementation for fetching u8view from JSON instance
     template<>
-    inline nullable<f5::u8view> json::get() const {
+    inline nullable<felspar::u8view> json::get() const {
         string_t const *const p = std::get_if<string_t>(&m_element);
         if (p) {
             return *p;
         } else {
-            f5::lstring const *const ls = std::get_if<f5::lstring>(&m_element);
+            felspar::lstring const *const ls =
+                    std::get_if<felspar::lstring>(&m_element);
             if (ls) return *ls;
             return null;
         }
     }
 
 
-}
-
-
-inline std::ostream &operator<<(std::ostream &os, char16_t ch) {
-    return os << unsigned{ch};
-}
-inline std::ostream &operator<<(std::ostream &os, char16_t *str) {
-    f5::u16string s{str};
-    return os << fostlib::coerce<f5::u8string>(f5::u16view{s});
-}
-inline std::ostream &operator<<(std::ostream &os, char32_t ch) {
-    return os << unsigned{ch};
 }
 
 

@@ -12,11 +12,9 @@ if("${ANDROID_ABI}" STREQUAL "")
     install(TARGETS fost-cli LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
     if(TARGET check)
-        add_library(fost-cli-smoke STATIC EXCLUDE_FROM_ALL
+        add_test_run(check fost-cli TESTS
                 arguments-tests.cpp
                 progress-bar-tests.cpp
             )
-        target_link_libraries(fost-cli-smoke fost-cli)
-        smoke_test(fost-cli-smoke)
     endif()
 endif()

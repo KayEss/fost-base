@@ -1,11 +1,3 @@
-/**
-    Copyright 1998-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-cli.hpp"
 #include <fost/inifile.hpp>
 #include <fost/insert>
@@ -23,17 +15,17 @@ using namespace fostlib;
 fostlib::exceptions::invalid_ini_line::invalid_ini_line(
         const fostlib::string &section,
         const fostlib::string &read,
-        const fostlib::string &processed) noexcept
-: exception() {
+        const fostlib::string &processed,
+        felspar::source_location sl) noexcept
+: exception{std::move(sl)} {
     fostlib::insert(data(), "section", section);
     fostlib::insert(data(), "ini-file", read);
     fostlib::insert(data(), "processed", processed);
 }
 
 
-const wchar_t *const
-        fostlib::exceptions::invalid_ini_line::message() const noexcept {
-    return L"Invalid line in INI file";
+felspar::u8view fostlib::exceptions::invalid_ini_line::message() const noexcept {
+    return "Invalid line in INI file";
 }
 
 
@@ -50,7 +42,8 @@ fostlib::ini_file::ini_file(string const &a_fileName) : m_fileName{a_fileName} {
 void fostlib::ini_file::loadAll() {
     string section, line,
             file(utf::load_file(
-                    coerce<fs::path>(m_fileName), fostlib::string{}));
+                    coerce<std::filesystem::path>(m_fileName),
+                    fostlib::string{}));
 
     for (utf32 const c : file) {
         if (c == '\n' || c == '\r') {

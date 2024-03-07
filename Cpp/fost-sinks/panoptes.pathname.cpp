@@ -1,11 +1,3 @@
-/**
-    Copyright 2009-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
-*/
-
-
 #include <fost/sinks.panoptes.hpp>
 
 
@@ -24,33 +16,32 @@ fostlib::log::detail::archive_pathname::archive_pathname(const class module &m)
 
 fostlib::log::detail::archive_pathname::fileloc_type
         fostlib::log::detail::archive_pathname::pathname(
-                const fostlib::timestamp &when) const {
+                std::chrono::system_clock::time_point when) const {
     fostlib::string ts = fostlib::replace_all(coerce<string>(when), ":", null);
-    fostlib::fs::path directory =
-            coerce<fostlib::fs::wpath>(c_log_sink_file_root.value())
-            / coerce<fostlib::fs::wpath>(ts.substr(0, 7))
-            / coerce<fostlib::fs::wpath>(ts.substr(8, 2));
-    fostlib::fs::wpath data_path(
+    auto const directory =
+            coerce<std::filesystem::path>(c_log_sink_file_root.value())
+            / coerce<std::filesystem::path>(ts.substr(0, 7))
+            / coerce<std::filesystem::path>(ts.substr(8, 2));
+    auto const data_path(
             directory
-            / coerce<fostlib::fs::wpath>(
+            / coerce<std::filesystem::path>(
                     modulep->as_string() + "/" + ts + ".jsonl"));
-    if (!fostlib::fs::exists(data_path.parent_path())) {
-        fostlib::fs::create_directories(data_path.parent_path());
+    if (not std::filesystem::exists(data_path.parent_path())) {
+        std::filesystem::create_directories(data_path.parent_path());
     }
-    date day(coerce<boost::posix_time::ptime>(when).date());
+    date const day{when};
     fileloc_type fl = {day, data_path};
     return fl;
 }
 
 
-fostlib::fs::wpath fostlib::log::detail::archive_pathname::operator()(
-        const fostlib::timestamp &when) {
-    const boost::posix_time::ptime time(coerce<boost::posix_time::ptime>(when));
-    const date day(time.date());
+std::filesystem::path fostlib::log::detail::archive_pathname::operator()(
+        std::chrono::system_clock::time_point when) {
+    const date day{when};
     if (not fileloc) {
         fileloc = pathname(when);
-    } else if (fostlib::fs::exists(fileloc.value().pathname)) {
-        uintmax_t size = fostlib::fs::file_size(fileloc.value().pathname);
+    } else if (std::filesystem::exists(fileloc.value().pathname)) {
+        uintmax_t size = std::filesystem::file_size(fileloc.value().pathname);
         if (rotate(size) || day != fileloc.value().date) {
             fileloc = pathname(when);
         }

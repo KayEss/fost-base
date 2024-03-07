@@ -1,11 +1,3 @@
-/**
-    Copyright 2001-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_EXCEPTION_UNEXPECTED_EOF_HPP
 #define FOST_EXCEPTION_UNEXPECTED_EOF_HPP
 #pragma once
@@ -22,14 +14,26 @@ namespace fostlib {
 
         class FOST_CORE_DECLSPEC unexpected_eof : public exception {
           public:
-            unexpected_eof() noexcept;
-            unexpected_eof(const string &message) noexcept;
             unexpected_eof(
-                    const string &message, const string &filename) noexcept;
-            unexpected_eof(const string &message, fostlib::error_code) noexcept;
+                    felspar::source_location =
+                            felspar::source_location::current()) noexcept;
+            unexpected_eof(
+                    const string &message,
+                    felspar::source_location =
+                            felspar::source_location::current()) noexcept;
+            unexpected_eof(
+                    const string &message,
+                    const string &filename,
+                    felspar::source_location =
+                            felspar::source_location::current()) noexcept;
+            unexpected_eof(
+                    const string &message,
+                    std::error_code,
+                    felspar::source_location =
+                            felspar::source_location::current()) noexcept;
 
           protected:
-            const wchar_t *const message() const noexcept;
+            felspar::u8view message() const noexcept;
         };
 
 

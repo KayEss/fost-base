@@ -1,11 +1,3 @@
-/**
-    Copyright 2000-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_PERIOD_HPP
 #define FOST_PERIOD_HPP
 #pragma once
@@ -28,9 +20,9 @@ namespace fostlib {
     class period<void> {
       public:
         /// The start of the period. Null is forever
-        accessors<nullable<timestamp>> start;
+        accessors<std::optional<std::chrono::system_clock::time_point>> start;
         /// The end of the period. Null is forever
-        accessors<nullable<timestamp>> end;
+        accessors<std::optional<std::chrono::system_clock::time_point>> end;
 
         /// Allow periods to be compared for equality
         bool operator==(const period<void> &p) const {
@@ -42,7 +34,8 @@ namespace fostlib {
         /// Construct an empty period that lasts forever
         period() {}
         /// Construct a period from two timestamps
-        period(const timestamp &start, const timestamp &end)
+        period(std::chrono::system_clock::time_point const start,
+               std::chrono::system_clock::time_point const end)
         : start(start), end(end) {}
     };
 
@@ -73,9 +66,12 @@ namespace std {
 
 
     template<typename V>
+    requires requires(fostlib::ostream &o, fostlib::period<V> t) {
+        {o << t.value()};
+    }
     inline fostlib::ostream &
             operator<<(fostlib::ostream &o, const fostlib::period<V> &p) {
-        return o << fostlib::coerce<fostlib::string>(p);
+        return o << p.start() << "->" << p.end() << ':' << p.value();
     }
 
 

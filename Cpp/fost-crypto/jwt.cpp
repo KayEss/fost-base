@@ -1,11 +1,3 @@
-/**
-    Copyright 2016-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-crypto.hpp"
 #include <fost/ed25519.hpp>
 #include <fost/jwt.hpp>
@@ -42,11 +34,6 @@ namespace {
  */
 
 
-namespace {
-    const fostlib::timestamp c_epoch(1970, 1, 1);
-}
-
-
 fostlib::jwt::mint::mint(alg a, json p)
 : algorithm{a}, m_payload(std::move(p)) {
     insert(header, "typ", "JWT");
@@ -67,22 +54,13 @@ fostlib::jwt::mint &fostlib::jwt::mint::subject(const string &s) {
 }
 
 
-fostlib::timestamp fostlib::jwt::mint::expires(const timediff &tp, bool issued) {
-    auto now = timestamp::now();
-    const auto exp = now + tp;
-    if (issued) insert(m_payload, "iss", (now - c_epoch).total_seconds());
-    insert(m_payload, "exp", (exp - c_epoch).total_seconds());
-    return exp;
-}
-
-
-fostlib::jwt::mint &fostlib::jwt::mint::claim(f5::u8view u, const json &j) {
+fostlib::jwt::mint &fostlib::jwt::mint::claim(felspar::u8view u, const json &j) {
     insert(m_payload, u, j);
     return *this;
 }
 
 
-std::string fostlib::jwt::mint::token(f5::buffer<const f5::byte> key) const {
+std::string fostlib::jwt::mint::token(felspar::buffer<const felspar::byte> key) {
     std::string str_header, str_payload;
     json::unparse(str_header, header, false);
     json::unparse(str_payload, m_payload, false);
@@ -101,26 +79,26 @@ std::string fostlib::jwt::mint::token(f5::buffer<const f5::byte> key) const {
 
 
 std::string fostlib::jws::sign_base64_string(
-        f5::u8view header_b64,
-        f5::u8view payload_b64,
+        felspar::u8view header_b64,
+        felspar::u8view payload_b64,
         alg algorithm,
-        f5::buffer<const f5::byte> key) {
+        felspar::buffer<const felspar::byte> key) {
     switch (algorithm) {
     case alg::HS256: {
         hmac digester{sha256, key};
         digester << header_b64 << "." << payload_b64;
         return static_cast<std::string>(
-                f5::u8view{header_b64 + "."} + payload_b64 + "."
+                felspar::u8view{header_b64 + "."} + payload_b64 + "."
                 + base64url(digester.digest()));
     }
     case alg::EdDSA: {
         ed25519::keypair const kp{key};
-        auto const b64 = f5::u8view{header_b64 + "."} + payload_b64;
-        auto const signature = kp.sign(f5::buffer<const f5::byte>{
+        auto const b64 = felspar::u8view{header_b64 + "."} + payload_b64;
+        auto const signature = kp.sign(felspar::buffer<const felspar::byte>{
                 reinterpret_cast<unsigned char const *>(b64.data()),
                 b64.bytes()});
-        return static_cast<std::string>(
-                string{b64 + "." + base64url(signature)});
+        return static_cast<std::string>(b64) + "."
+                + static_cast<std::string>(base64url(signature));
     }
     }
 #ifdef __GNUC__
@@ -136,8 +114,8 @@ std::string fostlib::jws::sign_base64_string(
 
 
 fostlib::nullable<fostlib::jwt::token> fostlib::jwt::token::load(
-        f5::u8view t,
-        const std::function<std::vector<f5::byte>(json, json)> &lambda) {
+        felspar::u8view t,
+        const std::function<std::vector<felspar::byte>(json, json)> &lambda) {
     const auto parts = split(t, ".");
     if (parts.size() != 3u) return fostlib::null;
 
@@ -180,7 +158,9 @@ fostlib::nullable<fostlib::jwt::token> fostlib::jwt::token::load(
             if (not fostlib::ed25519::verify(
                         lambda(header, payload),
                         (parts[0] + "." + parts[1]).data(), v64_signature)) {
-                log::warning(c_fost)("", "EdDSA verification failed");
+                log::warning(c_fost)("", "EdDSA verification failed")(
+                        "header",
+                        header)("payload", payload)("signature", v64_signature);
                 return fostlib::null;
             }
         } else if (header["alg"] == rs256) {
@@ -189,9 +169,9 @@ fostlib::nullable<fostlib::jwt::token> fostlib::jwt::token::load(
             auto public_key = lambda(header, payload);
             std::string modulus_n;
             std::string exponent_e;
-            for (std::vector<f5::byte>::iterator it = public_key.begin();
+            for (std::vector<felspar::byte>::iterator it = public_key.begin();
                  it != public_key.end(); ++it) {
-                if (*it == f5::byte(0x00)) {
+                if (*it == felspar::byte(0x00)) {
                     exponent_e = std::string(public_key.begin(), it);
                     modulus_n = std::string(it + 1, public_key.end());
                     break;
@@ -211,10 +191,9 @@ fostlib::nullable<fostlib::jwt::token> fostlib::jwt::token::load(
             return fostlib::null;
         }
         if (payload.has_key("exp")) {
-            auto exp = c_epoch
-                    + fostlib::timediff(fostlib::seconds(
-                            fostlib::coerce<int64_t>(payload["exp"])));
-            if (exp < fostlib::timestamp::now()) {
+            auto const exp = std::chrono::system_clock::from_time_t(
+                    fostlib::coerce<std::time_t>(payload["exp"]));
+            if (exp < std::chrono::system_clock::now()) {
                 log::warning(c_fost)("", "JWT expired")("expires", exp);
                 return fostlib::null;
             }

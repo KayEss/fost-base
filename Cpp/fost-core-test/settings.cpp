@@ -1,14 +1,7 @@
-/**
-    Copyright 2009-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core-test.hpp"
 #include <fost/core>
 #include <fost/insert>
+#include <fost/main>
 
 
 FSL_TEST_SUITE(settings);
@@ -16,6 +9,7 @@ FSL_TEST_SUITE(settings);
 
 FSL_TEST_FUNCTION(load_base_settings_file) {
     try {
+        fostlib::ini_file base_settings_file("/etc/fost.conf");
         FSL_CHECK(fostlib::setting<bool>::value(
                 "Settings database tests", "Loaded base settings file"));
     } catch (fostlib::exceptions::exception &e) {

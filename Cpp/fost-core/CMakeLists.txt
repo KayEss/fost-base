@@ -1,12 +1,9 @@
-find_package(Threads REQUIRED)
 
 add_library(fost-core
         atexit.cpp
-        base16.cpp
         base32.cpp
         coerce.cpp
         counter.cpp
-        date.cpp
         dynlib.cpp
         exception.cpp
         file.cpp
@@ -18,10 +15,6 @@ add_library(fost-core
         json-sloppy-parse.cpp
         json-unparse.cpp
         log.cpp
-        log-global.cpp
-        log-impl.cpp
-        log-scoped.cpp
-        meter.cpp
         module.cpp
         pool.cpp
         progress.cpp
@@ -32,28 +25,29 @@ add_library(fost-core
         string-utilities.cpp
         thread.cpp
         time.cpp
-        timediff.cpp
         timestamp.cpp
-        timestamp-rfc1123.cpp
         timezone.cpp
         unicode.cpp
-        yaml.cpp
     )
 target_include_directories(fost-core PUBLIC ../include)
+if(NOT TARGET boost)
+    find_package(Boost 1.62.0)
+    find_package(Threads REQUIRED)
+    target_include_directories(fost-core PUBLIC ${Boost_INCLUDE_DIRS})
+else()
+    target_link_libraries(fost-core boost)
+endif()
 target_compile_options(fost-core PUBLIC -fdiagnostics-color)
 if("${toolset}" STREQUAL "gcc")
     target_compile_options(fost-core PUBLIC -Wno-deprecated-declarations)
 endif()
 target_link_libraries(fost-core ${CMAKE_THREAD_LIBS_INIT} dl
-    boost_date_time boost_filesystem boost_system
-    boost f5-cord f5-threading)
-set_target_properties(fost-core PROPERTIES DEBUG_POSTFIX "-d")
+    felspar-cord felspar-test felspar-threading)
 install(TARGETS fost-core LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 install(DIRECTORY ../include/fost DESTINATION include)
 
 if(TARGET check)
-    add_library(fost-core-smoke STATIC EXCLUDE_FROM_ALL
-            base16.tests.cpp
+    add_test_run(check fost-core TESTS
             base32.tests.cpp
             char-encoding-tests.cpp
             coercion-int-tests.cpp
@@ -87,8 +81,5 @@ if(TARGET check)
             timestamp-tests.cpp
             trim.tests.cpp
             unicode.tests.cpp
-            yaml-tests.cpp
         )
-    target_link_libraries(fost-core-smoke fost-core)
-    smoke_test(fost-core-smoke)
 endif()

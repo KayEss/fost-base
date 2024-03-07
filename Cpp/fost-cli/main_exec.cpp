@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-cli.hpp"
 #include <fost/main.hpp>
 
@@ -45,14 +37,7 @@ void fostlib::standard_arguments(
 namespace {
     int exception_wrapper(fostlib::ostream &, std::function<int(void)> f) {
         try {
-            fostlib::exceptions::structured_handler handler;
-#ifdef WIN32
-            fostlib::ini_file base_settings_file(
-                    fostlib::arguments::environment("windir") + "\\fost.ini");
-#else
             fostlib::ini_file base_settings_file("/etc/fost.conf");
-#endif
-
             return f();
         } catch (fostlib::exceptions::exception &e) {
             std::cerr << std::endl
@@ -78,8 +63,6 @@ namespace {
         args.commandSwitch("j", settings.name, "JSON File");
         fostlib::settings jfile(settings.c_json_file);
         fostlib::standard_arguments(settings, out, args);
-        fostlib::log::global_sink_configuration log_sinks(
-                settings.c_logging.value());
         return main_f(out, args);
     }
     int complex_wrapper(

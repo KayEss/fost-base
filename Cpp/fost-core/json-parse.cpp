@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/parse/json.hpp>
 
@@ -14,18 +6,18 @@
 
 
 namespace {
-    fostlib::json_parser<f5::cord::const_u32u16_iterator<
+    fostlib::json_parser<felspar::cord::const_u32u16_iterator<
             fostlib::string::const_iterator>> const c_json_str_rule;
-    fostlib::json_parser<
-            f5::cord::const_u32u16_iterator<f5::u8view::const_iterator>> const
-            c_json_u8v_rule;
-    fostlib::json_parser<f5::u16view::const_u16_iterator> const c_json_u16_rule;
+    fostlib::json_parser<felspar::cord::const_u32u16_iterator<
+            felspar::u8view::const_iterator>> const c_json_u8v_rule;
+    fostlib::json_parser<felspar::u16view::const_u16_iterator> const
+            c_json_u16_rule;
 
     fostlib::json_parser<
             char const *,
             fostlib::json_string_parser_no_unicode_escapes> const c_json_quick;
 
-    fostlib::json quick_parse(f5::u8view text) {
+    fostlib::json quick_parse(felspar::u8view text) {
         fostlib::json ret{};
         char const *pos = reinterpret_cast<char const *>(text.memory().begin());
         char const *const end =
@@ -45,7 +37,7 @@ namespace {
         }
     }
 
-    fostlib::json quick_parse(f5::u8view text, fostlib::json const &def) {
+    fostlib::json quick_parse(felspar::u8view text, fostlib::json const &def) {
         fostlib::json ret{};
         char const *pos = reinterpret_cast<char const *>(text.memory().begin());
         char const *const end =
@@ -65,12 +57,13 @@ namespace {
 }
 
 
-fostlib::json fostlib::json::parse(f5::u8view toparse) {
+fostlib::json fostlib::json::parse(felspar::u8view toparse) {
     if (std::string_view{toparse}.find("\\u") == std::string_view::npos) {
         return quick_parse(toparse);
     }
     fostlib::json ret{};
-    auto pos = f5::cord::make_u32u16_iterator(toparse.begin(), toparse.end());
+    auto pos =
+            felspar::cord::make_u32u16_iterator(toparse.begin(), toparse.end());
     try {
         if (boost::spirit::qi::parse(pos.first, pos.second, c_json_u8v_rule, ret)
             && pos.first == pos.second) {
@@ -88,7 +81,7 @@ fostlib::json fostlib::json::parse(f5::u8view toparse) {
 }
 
 
-fostlib::json fostlib::json::parse(f5::u16view s) {
+fostlib::json fostlib::json::parse(felspar::u16view s) {
     fostlib::json ret{};
     auto pos = s.u16begin();
     try {
@@ -98,14 +91,14 @@ fostlib::json fostlib::json::parse(f5::u16view s) {
         } else {
             throw exceptions::parse_error{
                     "Whilst parsing JSON string",
-                    fostlib::coerce<f5::u8string>(
-                            f5::u16view(pos, s.u16end() - pos))};
+                    fostlib::coerce<felspar::u8string>(
+                            felspar::u16view(&*pos, s.u16end() - pos))};
         }
     } catch (std::runtime_error &e) {
         throw exceptions::parse_error{
                 e.what(),
-                fostlib::coerce<f5::u8string>(
-                        f5::u16view(pos, s.u16end() - pos))};
+                fostlib::coerce<felspar::u8string>(
+                        felspar::u16view(&*pos, s.u16end() - pos))};
     }
 }
 
@@ -115,7 +108,8 @@ fostlib::json fostlib::json::parse(string const &toparse, json const &def) {
         return quick_parse(toparse, def);
     }
     fostlib::json ret{};
-    auto pos = f5::cord::make_u32u16_iterator(toparse.begin(), toparse.end());
+    auto pos =
+            felspar::cord::make_u32u16_iterator(toparse.begin(), toparse.end());
     try {
         if (boost::spirit::qi::parse(pos.first, pos.second, c_json_str_rule, ret)
             && pos.first == pos.second) {

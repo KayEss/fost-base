@@ -1,14 +1,6 @@
-/**
-    Copyright 2010-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-cli.hpp"
-#include <f5/cord/iostream.hpp>
-#include <fost/log>
+#include <felspar/cord/iostream.hpp>
+#include <fost/cli>
 
 #include <iostream>
 
@@ -63,40 +55,42 @@ namespace {
                          .value_or(false)),
           channel(conf["channel"] == fostlib::json("stderr") ? std::cerr
                                                              : std::cout) {}
-        bool operator()(const fostlib::log::message &m) {
-            if (colour) {
-                if (m.level()
-                    <= fostlib::log::debug_level_tag::level() + 0x100) {
-                    channel << "\33[0;37m";
-                } else if (
-                        m.level()
-                        <= fostlib::log::info_level_tag::level() + 0x300) {
-                    channel << "\33[0;32m";
-                } else if (
-                        m.level()
-                        <= fostlib::log::warning_level_tag::level() + 0x2000) {
-                    channel << "\33[1;33m";
-                } else if (
-                        m.level()
-                        <= fostlib::log::error_level_tag::level() + 0x20000) {
-                    channel << "\33[0;31m";
-                } else {
-                    channel << "\33[1;31m";
-                }
-            }
-            if (m.level() >= log_level) {
-                channel << m.when() << " " << m.name() << " " << m.module();
-                if (colour) {
-                    disp d{channel};
-                    m.body().apply_visitor(d);
-                } else {
-                    channel << '\n' << m.body() << std::endl;
-                }
-            }
-            if (colour) { channel << "\33[0;39m"; }
+        bool operator()(fostlib::log::message m) {
+            fostlib::simple_logger(std::move(m), log_level, colour, channel);
             return true;
         }
     };
 
-    const fostlib::log::global_sink<ostream_logger> std_out("stdout");
+    const fostlib::log::sink_function<ostream_logger> std_out("stdout");
+}
+
+
+void fostlib::simple_logger(
+        log::message const &m,
+        std::size_t const log_level,
+        bool const colour,
+        std::ostream &channel) {
+    if (m.level >= log_level) {
+        if (colour) {
+            if (m.level <= fostlib::log::debug_level_tag::level() + 0x100) {
+                channel << "\33[0;37m";
+            } else if (m.level <= fostlib::log::info_level_tag::level() + 0x300) {
+                channel << "\33[0;32m";
+            } else if (m.level <= fostlib::log::warning_level_tag::level() + 0x2000) {
+                channel << "\33[1;33m";
+            } else if (m.level <= fostlib::log::error_level_tag::level() + 0x20000) {
+                channel << "\33[0;31m";
+            } else {
+                channel << "\33[1;31m";
+            }
+        }
+        channel << m.when << " " << m.name << " " << m.module();
+        if (colour) {
+            disp d{channel};
+            m.body.apply_visitor(d);
+            channel << "\33[0;39m";
+        } else {
+            channel << '\n' << m.body << std::endl;
+        }
+    }
 }

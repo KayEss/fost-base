@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #pragma once
 
 
@@ -39,7 +31,7 @@ namespace fostlib {
         /// Construct a tagged string from the underlying string
         template<typename S>
         explicit tagged_string(S s, t_encoding e = encoded)
-        : m_string{std::move(s)} {
+        : m_string{static_cast<felspar::u8string>(std::move(s))} {
             switch (e) {
             case encoded: tag_type::check_encoded(m_string); break;
             case unencoded:
@@ -96,11 +88,6 @@ namespace fostlib {
             return m_string != t.m_string;
         }
 
-        tagged_string &operator=(const tagged_string &s) {
-            m_string = s.m_string;
-            return *this;
-        }
-
         tagged_string operator+(const tagged_string &s) const {
             return tagged_string(m_string + s.m_string);
         }
@@ -112,7 +99,7 @@ namespace fostlib {
             m_string += c;
             return *this;
         }
-        tagged_string &operator+=(f5::u8view const c) {
+        tagged_string &operator+=(felspar::u8view const c) {
             return operator+=(tagged_string{c});
         }
         tagged_string &operator+=(string const &c) {
@@ -133,35 +120,35 @@ namespace fostlib {
         /// Return basic string information
         auto _data() const { return data(m_string); }
         auto bytes() const { return size(m_string); }
-        /// All of the tagged strings are UTF8 compatible so this is safe
-        operator f5::u8view() const {
-            return f5::u8view{data(m_string), size(m_string)};
+        /// All of the tagged strings are UTF8 compatible so these are safe
+        operator felspar::u8view() const {
+            return felspar::u8view{data(m_string), size(m_string)};
+        }
+        operator std::string_view() const {
+            return static_cast<std::string_view>(m_string);
         }
         /// Explicit casts
         explicit operator std::string() const {
             return static_cast<std::string>(m_string);
-        }
-        explicit operator std::string_view() const {
-            return static_cast<std::string_view>(m_string);
         }
     };
 
 
     template<typename T, typename I>
     inline auto operator==(std::string const &l, tagged_string<T, I> const &r) {
-        return l == f5::u8view{r};
+        return l == felspar::u8view{r};
     }
     template<typename T, typename I>
     inline auto operator!=(std::string const &l, tagged_string<T, I> const &r) {
-        return l != f5::u8view{r};
+        return l != felspar::u8view{r};
     }
     template<typename T, typename I>
-    inline auto operator+(f5::u8string l, tagged_string<T, I> const &r) {
-        return tagged_string<T, I>{f5::u8view{l} + f5::u8view{r}};
+    inline auto operator+(felspar::u8string l, tagged_string<T, I> const &r) {
+        return tagged_string<T, I>{felspar::u8view{l} + felspar::u8view{r}};
     }
     template<typename T, typename I>
     inline auto operator+(string const &l, tagged_string<T, I> const &r) {
-        return tagged_string<T, I>{f5::u8view{l} + f5::u8view{r}};
+        return tagged_string<T, I>{felspar::u8view{l} + felspar::u8view{r}};
     }
     template<typename T, typename I>
     inline decltype(auto)
@@ -186,7 +173,7 @@ namespace fostlib {
         static void do_encode(const string &from, string &into);
         static void check_encoded(const string &s);
     };
-    /// A UTF8 string is a f5::u8string internally
+    /// A UTF8 string is a felspar::u8string internally
     typedef tagged_string<utf8_string_tag, string> utf8_string;
 
 

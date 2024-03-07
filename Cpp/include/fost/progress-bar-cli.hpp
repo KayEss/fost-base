@@ -1,11 +1,3 @@
-/**
-    Copyright 2013-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_PROGRESS_BAR_CLI_HPP
 #define FOST_PROGRESS_BAR_CLI_HPP
 #pragma once
@@ -13,52 +5,57 @@
 
 #include <fost/progress>
 
-
-namespace fostlib {
-
-
-    namespace cli {
+#include <future>
 
 
-        namespace detail {
+namespace fostlib::cli {
 
 
-            FOST_CLI_DECLSPEC
-            /// Return a suitable default prefix
-            string prefix(const fostlib::meter::reading &);
-
-            FOST_CLI_DECLSPEC
-            /// Return a suitable default suffix
-            string suffix(const fostlib::meter::reading &);
-
-
-        }
+    namespace detail {
 
 
         FOST_CLI_DECLSPEC
-        /// Return a string of the requested length representing the reading
-        string bar(const meter::reading &, std::size_t width);
+        /// Return a suitable default prefix
+        string prefix(const fostlib::progress::reading &);
 
-        /// Monitor a future and report progress
-        template<typename R, typename P, typename S>
-        void monitor(
-                fostlib::ostream &out,
-                meter &tracking,
-                R &future,
-                S suffix = detail::suffix,
-                P prefix = detail::prefix,
-                const fostlib::milliseconds delay = fostlib::milliseconds(50),
-                const std::size_t pips = 50) {
-            while (!future.available(delay)) {
-                fostlib::meter::reading current(tracking());
-                out << prefix(current) << bar(current, pips) << suffix(current)
-                    << '\r' << std::flush;
-            }
-            fostlib::meter::reading current(tracking());
+        FOST_CLI_DECLSPEC
+        /// Return a suitable default suffix
+        string suffix(const fostlib::progress::reading &);
+
+
+    }
+
+
+    FOST_CLI_DECLSPEC
+    /// Return a string of the requested length representing the reading
+    string bar(const progress::reading &, std::size_t width);
+
+    /// Monitor a future and report progress
+    template<typename R, typename S, typename P>
+    void
+            monitor(fostlib::ostream &out,
+                    std::future<R> &future,
+                    S suffix,
+                    P prefix,
+                    std::chrono::milliseconds const delay =
+                            std::chrono::milliseconds(50),
+                    std::size_t const pips = 50) {
+        while (future.wait_for(delay) != std::future_status::ready) {
+            auto const current{progress::take_reading()};
             out << prefix(current) << bar(current, pips) << suffix(current)
-                << std::endl;
+                << '\r' << std::flush;
         }
-
+        auto const current{progress::take_reading()};
+        out << prefix(current) << bar(current, pips) << suffix(current)
+            << std::endl;
+    }
+    template<typename R, typename S>
+    void monitor(fostlib::ostream &out, std::future<R> &future, S suffix) {
+        monitor(out, future, suffix, detail::prefix);
+    }
+    template<typename R>
+    void monitor(fostlib::ostream &out, std::future<R> &future) {
+        monitor(out, future, detail::suffix, detail::prefix);
     }
 
 

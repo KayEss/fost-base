@@ -1,11 +1,3 @@
-/**
-    Copyright 2001-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_EXCEPTION_OVERFLOW_HPP
 #define FOST_EXCEPTION_OVERFLOW_HPP
 #pragma once
@@ -27,32 +19,50 @@ namespace fostlib {
         template<>
         class FOST_CORE_DECLSPEC overflow<string> : public exception {
           public:
-            overflow(const string &message) noexcept;
+            overflow(
+                    const string &message,
+                    felspar::source_location =
+                            felspar::source_location::current()) noexcept;
             overflow(
                     const string &message,
                     const string &n,
                     const string &d,
-                    const string &m) noexcept;
-            overflow(const string &n, const string &d, const string &m) noexcept;
+                    const string &m,
+                    felspar::source_location =
+                            felspar::source_location::current()) noexcept;
+            overflow(
+                    const string &n,
+                    const string &d,
+                    const string &m,
+                    felspar::source_location =
+                            felspar::source_location::current()) noexcept;
 
           protected:
-            const wchar_t *const message() const noexcept;
+            felspar::u8view message() const noexcept;
         };
 
         template<typename T>
         class overflow : public overflow<string> {
           public:
             overflow(
-                    const string &message,
+                    const string &msg,
                     const T n,
                     const T d,
-                    const T m) noexcept
-            : overflow<string>(
-                    m, coerce<string>(n), coerce<string>(d), coerce<string>(m)) {
-            }
-            overflow(const T n, const T d, const T m) noexcept
-            : overflow<string>(
-                    coerce<string>(n), coerce<string>(d), coerce<string>(m)) {}
+                    const T m,
+                    felspar::source_location sl =
+                            felspar::source_location::current()) noexcept
+            : overflow<string>{
+                    msg, coerce<string>(n), coerce<string>(d),
+                    coerce<string>(m), std::move(sl)} {}
+            overflow(
+                    const T n,
+                    const T d,
+                    const T m,
+                    felspar::source_location sl =
+                            felspar::source_location::current()) noexcept
+            : overflow<string>{
+                    coerce<string>(n), coerce<string>(d), coerce<string>(m),
+                    std::move(sl)} {}
         };
 
 

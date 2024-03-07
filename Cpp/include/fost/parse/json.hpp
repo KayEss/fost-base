@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_PARSE_JSON_HPP
 #define FOST_PARSE_JSON_HPP
 #pragma once
@@ -41,7 +33,7 @@ namespace fostlib {
 
             top = str[boost::phoenix::bind(
                     [](auto &v, auto &s) {
-                        auto pos = f5::cord::make_u16u32_iterator<
+                        auto pos = felspar::cord::make_u16u32_iterator<
                                 exceptions::unicode_encoding>(
                                 s.begin(), s.end());
                         for (; pos.first != pos.second; ++pos.first) {
@@ -88,7 +80,7 @@ namespace fostlib {
             using boost::spirit::qi::lit;
 
             top = str[boost::phoenix::bind(
-                    [](auto &v, auto &s) { v = f5::u8string{std::move(s)}; },
+                    [](auto &v, auto &s) { v = felspar::u8string{std::move(s)}; },
                     _val, _1)];
 
             str = lit('"')

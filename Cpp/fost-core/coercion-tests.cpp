@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core-test.hpp"
 
 #include <fost/core>
@@ -81,9 +73,9 @@ FSL_TEST_FUNCTION(double) {
 
 
 FSL_TEST_FUNCTION(string) {
-    BOOST_STATIC_ASSERT(!boost::is_integral<fostlib::string>::value);
-    BOOST_STATIC_ASSERT(!boost::is_integral<char[7]>::value);
-    BOOST_STATIC_ASSERT(boost::is_integral<char>::value);
+    static_assert(not std::is_integral<fostlib::string>::value);
+    static_assert(not std::is_integral<char[7]>::value);
+    static_assert(std::is_integral<char>::value);
 
     FSL_CHECK_EQ(
             fostlib::coerce<fostlib::string>(fostlib::null), fostlib::string());
@@ -159,35 +151,14 @@ FSL_TEST_FUNCTION(convert_from_arabic) {
 
 
 FSL_TEST_FUNCTION(exception_json) {
-    fostlib::json expected;
-    fostlib::insert(expected, "exception", "Feature not implemented");
-    fostlib::insert(expected, "data", "function", __PRETTY_FUNCTION__);
-    fostlib::insert(expected, "data", "message", "Test exception");
-    try {
-        throw fostlib::exceptions::not_implemented(
-                __PRETTY_FUNCTION__, "Test exception");
-    } catch (fostlib::exceptions::exception &e) {
-        FSL_CHECK_EQ(fostlib::coerce<fostlib::json>(e), expected);
-    }
-}
-
-
-FSL_TEST_FUNCTION(exception_string) {
     try {
         throw fostlib::exceptions::not_implemented("Test exception");
     } catch (fostlib::exceptions::exception &e) {
-        FSL_CHECK_EQ(
-                fostlib::coerce<fostlib::string>(e),
-                "Feature not implemented\nData: {\n    \"function\" : \"Test "
-                "exception\"\n}\n");
-    }
-    try {
-        throw fostlib::exceptions::not_implemented("Test exception");
-    } catch (fostlib::exceptions::not_implemented &e) {
-        FSL_CHECK_EQ(
-                fostlib::coerce<fostlib::string>(e),
-                "Feature not implemented\nData: {\n    \"function\" : \"Test "
-                "exception\"\n}\n");
+        auto const ejs = fostlib::coerce<fostlib::json>(e);
+        FSL_CHECK_EQ(ejs["exception"], "Feature not implemented");
+        FSL_CHECK_EQ(ejs["data"]["message"], "Test exception");
+        FSL_CHECK_EQ(ejs["data"]["source"]["function"], __func__);
+        FSL_CHECK_EQ(ejs["data"]["source"]["filename"], __FILE__);
     }
 }
 

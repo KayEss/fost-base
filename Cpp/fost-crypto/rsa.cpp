@@ -1,13 +1,3 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
-#include <string>
-
 #include <crypto++/base64.h>
 #include <crypto++/config.h>
 #include <crypto++/osrng.h>
@@ -17,12 +7,16 @@
 #include <fost/rsa.hpp>
 #include <fost/test>
 
+#include <string>
+
 
 namespace {
 
 
     CryptoPP::RSA::PrivateKey generate_private_key(
-            base64url_encoded n, base64url_encoded e, base64url_encoded d) {
+            fostlib::rsa::base64url_encoded n,
+            fostlib::rsa::base64url_encoded e,
+            fostlib::rsa::base64url_encoded d) {
         CryptoPP::StringSource decoded_n(
                 n, true, new CryptoPP::Base64URLDecoder);
         CryptoPP::StringSource decoded_e(
@@ -40,8 +34,9 @@ namespace {
     }
 
 
-    CryptoPP::RSA::PublicKey
-            generate_public_key(base64url_encoded n, base64url_encoded e) {
+    CryptoPP::RSA::PublicKey generate_public_key(
+            fostlib::rsa::base64url_encoded n,
+            fostlib::rsa::base64url_encoded e) {
         CryptoPP::StringSource decoded_n(
                 n, true, new CryptoPP::Base64URLDecoder);
         CryptoPP::StringSource decoded_e(
@@ -58,7 +53,7 @@ namespace {
 
 }
 
-base64url_encoded fostlib::rsa::PKCS1v15_SHA256::sign(
+fostlib::rsa::base64url_encoded fostlib::rsa::PKCS1v15_SHA256::sign(
         base64url_encoded message,
         base64url_encoded n,
         base64url_encoded e,

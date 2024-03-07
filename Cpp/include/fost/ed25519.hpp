@@ -1,25 +1,17 @@
-/**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #pragma once
 
 
-#include <f5/memory.hpp>
+#include <felspar/memory.hpp>
 #include <fost/array>
-
-#include <string>
+#include <fost/json>
+#include <fost/string>
 
 
 namespace fostlib::ed25519 {
 
 
     /// A public or private key or other secret
-    using secret = std::array<f5::byte, 32>;
+    using secret = std::array<felspar::byte, 32>;
 
 
     /// A keypair for ed25519
@@ -33,15 +25,15 @@ namespace fostlib::ed25519 {
         /// We'll just store the two parts in a single 64 byte array
         /// and call it done. The `priv` and `pub` accessors return
         /// the correct parts.
-        std::array<f5::byte, 64> privkey;
+        std::array<felspar::byte, 64> privkey;
 
       public:
         /// Create a new keypair
         explicit keypair();
         /// Create a keypair from a secret
-        explicit keypair(secret);
+        explicit keypair(secret const &);
         /// Create a keypair from a memory buffer
-        keypair(f5::buffer<const f5::byte>);
+        keypair(felspar::buffer<const felspar::byte>);
 
         /// Return the secret and private parts
         secret priv() const {
@@ -56,29 +48,63 @@ namespace fostlib::ed25519 {
         }
 
         /// Return a signature for the presented data
-        std::array<f5::byte, 64> sign(f5::buffer<const f5::byte> data) const;
+        std::array<felspar::byte, 64>
+                sign(felspar::buffer<const felspar::byte> data) const;
 
         /// Allow conversion of the keypair to a memory buffer
-        operator f5::buffer<const f5::byte>() const { return privkey; }
+        operator felspar::buffer<const felspar::byte>() const {
+            return privkey;
+        }
     };
 
 
     /// Verify a signed message has been signed with the provided public key
     bool
-            verify(f5::buffer<const f5::byte> pub,
-                   f5::buffer<const f5::byte> msg,
-                   f5::buffer<const f5::byte> sig);
+            verify(felspar::buffer<const felspar::byte> pub,
+                   felspar::buffer<const felspar::byte> msg,
+                   felspar::buffer<const felspar::byte> sig);
 
     inline bool
-            verify(f5::buffer<const f5::byte> pub,
+            verify(felspar::buffer<const felspar::byte> pub,
                    const std::string &msg,
-                   f5::buffer<const f5::byte> sig) {
+                   felspar::buffer<const felspar::byte> sig) {
         return verify(
                 pub,
-                f5::buffer<const f5::byte>{
+                felspar::buffer<const felspar::byte>{
                         reinterpret_cast<unsigned char const *>(msg.data()),
                         msg.size()},
                 sig);
     }
+
+
+}
+
+
+namespace fostlib {
+
+
+    /// Convert secrets to JSON and back
+    template<>
+    struct coercer<ed25519::secret, base64_string> {
+        ed25519::secret coerce(base64_string const &s) {
+            auto vec = fostlib::coerce<std::vector<unsigned char>>(s);
+            if (vec.size() != 32) {
+                throw fostlib::exceptions::out_of_range<std::size_t>{
+                        "Secret base64 must produce exactly 32 bytes", 32, 32,
+                        vec.size()};
+            }
+            ed25519::secret key;
+            std::copy(vec.begin(), vec.end(), key.begin());
+            return key;
+        }
+    };
+    template<>
+    struct coercer<ed25519::secret, json> {
+        ed25519::secret coerce(json const &j) {
+            return fostlib::coerce<ed25519::secret>(
+                    fostlib::coerce<base64_string>(j));
+        }
+    };
+
 
 }

@@ -1,11 +1,3 @@
-/**
-    Copyright 2007-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/exception/missing_setting.hpp>
 #include <fost/file.hpp>
@@ -89,7 +81,7 @@ void fostlib::setting<json>::construct(
 }
 
 
-fostlib::setting<json>::~setting() {
+fostlib::setting<json>::~setting<json>() {
     try {
 #ifdef WRITELOCKONLY
         std::lock_guard<std::mutex> lock(g_mutex());
@@ -219,19 +211,20 @@ fostlib::settings::settings(const string &domain, const json &values) {
 }
 
 
-fostlib::settings::settings(const fostlib::fs::path &file) {
+fostlib::settings::settings(std::filesystem::path const &file) {
     load_settings(coerce<string>(file), file);
 }
 
 
 fostlib::settings::settings(const setting<string> &json_file) {
     load_settings(
-            json_file.value(), coerce<fostlib::fs::path>(json_file.value()));
+            json_file.value(),
+            coerce<std::filesystem::path>(json_file.value()));
 }
 
 
 void fostlib::settings::load_settings(
-        const string &domain, const fostlib::fs::path &filename) {
+        const string &domain, std::filesystem::path const &filename) {
     load_settings(
             domain,
             fostlib::json::sloppy_parse(

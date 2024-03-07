@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_COERCE_HPP
 #define FOST_COERCE_HPP
 #pragma once
@@ -13,7 +5,9 @@
 
 #include <fost/null.hpp>
 
-#include <type_traits>
+#include <felspar/test/source.hpp>
+
+#include <exception>
 
 
 namespace fostlib {
@@ -21,18 +15,10 @@ namespace fostlib {
 
     /// Can be used to detect when a type conversion can be done through strict
     /// construction.
-    template<typename, typename, typename = std::void_t<>>
-    struct is_brace_constructible : std::false_type {};
     template<typename T, typename F>
-    struct is_brace_constructible<
-            T,
-            F,
-            std::void_t<decltype(T{std::declval<F>()})>> : std::true_type {};
-
-    template<typename T, typename F>
-    inline constexpr bool is_brace_constructible_v =
-            is_brace_constructible<T, F>::value;
-
+    concept is_brace_constructible = requires(F const f) {
+        {T{f}};
+    };
 
     /// ## Coercion helper
     /**
@@ -40,22 +26,45 @@ namespace fostlib {
      * coercions
      */
     template<typename T, typename F, typename Enable = void>
-    struct coercer {
-        /**
-         * If the `T` is constructible from the `F` then just forward to the
-         * constructor.
-         */
-        static_assert(is_brace_constructible_v<T, F>);
+    struct coercer;
 
-        T coerce(F const &f) { return T{f}; }
-        T coerce(F &&f) { return T{std::move(f)}; }
+    /// Can be used to detect whether the coercion struct is able to accept a
+    /// source file location or not.
+    template<typename T, typename F>
+    concept coercion_wants_source = requires(coercer<T, F, void> c) {
+        {c.coerce(std::declval<F>(), std::declval<felspar::source_location>())};
     };
 
 
     template<typename T, typename F>
-    inline T coerce(F &&f) {
-        return coercer<T, std::decay_t<F>>{}.coerce(std::forward<F>(f));
+    inline T coerce(
+            F &&f,
+            felspar::source_location loc = felspar::source_location::current()) {
+        using from_type = std::decay_t<F>;
+        if constexpr (coercion_wants_source<T, from_type>) {
+            return coercer<T, from_type>{}.coerce(
+                    std::forward<F>(f), std::move(loc));
+        } else {
+            return coercer<T, from_type>{}.coerce(std::forward<F>(f));
+        }
     }
+
+
+    /// Coercion for brace constructible types
+    template<typename T, typename F>
+    requires is_brace_constructible<T, F>
+    struct coercer<T, F, void> {
+        T coerce(
+                F const &f,
+                felspar::source_location = felspar::source_location::current()) {
+            return T{f};
+        }
+        T coerce(
+                F &&f,
+                felspar::source_location = felspar::source_location::current()) {
+            return T{std::move(f)};
+        }
+    };
 
 
 }

@@ -6,10 +6,8 @@ set_target_properties(fost-datetime PROPERTIES DEBUG_POSTFIX "-d")
 install(TARGETS fost-datetime LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 
 if(TARGET check)
-    add_library(fost-datetime-smoke STATIC EXCLUDE_FROM_ALL
+    add_test_run(check fost-datetime TESTS
             period-tests.cpp
             time_period.tests.cpp
         )
-    target_link_libraries(fost-datetime-smoke fost-datetime)
-    smoke_test(fost-datetime-smoke)
 endif()

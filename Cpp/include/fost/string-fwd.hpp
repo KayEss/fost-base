@@ -1,17 +1,9 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_STRING_FWD_HPP
 #define FOST_STRING_FWD_HPP
 #pragma once
 
 
-#include <f5/cord/unicode.hpp>
+#include <felspar/cord/unicode.hpp>
 
 #include <string>
 

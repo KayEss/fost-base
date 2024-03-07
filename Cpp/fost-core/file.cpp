@@ -1,11 +1,3 @@
-/**
-    Copyright 2001-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/filesystem.hpp>
 #include <fost/unicode.hpp>
@@ -63,7 +55,7 @@ namespace {
 
 
 void fostlib::utf::save_file(
-        const fostlib::fs::path &filename, const string &content) {
+        std::filesystem::path const &filename, const string &content) {
     std::ofstream file{filename.string()};
     if (not file.is_open())
         throw exceptions::file_error(
@@ -81,8 +73,8 @@ void fostlib::utf::save_file(
 }
 
 
-string fostlib::utf::load_file(const fostlib::fs::path &filename) {
-    fostlib::ifstream file(filename);
+string fostlib::utf::load_file(std::filesystem::path const &filename) {
+    std::ifstream file(filename);
     string text = loadfile(file);
     if ((!file.eof() && file.bad()) || text.empty())
         throw exceptions::unexpected_eof(
@@ -93,8 +85,8 @@ string fostlib::utf::load_file(const fostlib::fs::path &filename) {
 
 
 string fostlib::utf::load_file(
-        const fostlib::fs::path &filename, const string &default_content) {
-    fostlib::ifstream file(filename);
+        std::filesystem::path const &filename, const string &default_content) {
+    std::ifstream file(filename);
     string text = loadfile(file);
     if ((!file.eof() && file.bad()) || text.empty())
         return default_content;
@@ -103,14 +95,14 @@ string fostlib::utf::load_file(
 }
 
 
-fostlib::fs::path fostlib::unique_filename() {
-    return fostlib::fs::temp_directory_path()
-            / coerce<fostlib::fs::path>(guid());
+std::filesystem::path fostlib::unique_filename() {
+    return std::filesystem::temp_directory_path()
+            / coerce<std::filesystem::path>(guid());
 }
 
 
-fostlib::fs::path fostlib::join_paths(
-        const fostlib::fs::path &root, const fostlib::fs::path &path) {
+std::filesystem::path fostlib::join_paths(
+        std::filesystem::path const &root, std::filesystem::path const &path) {
     if (path.empty()) {
         return root;
     } else if (path.has_root_directory() || coerce<string>(path)[0] == '/') {

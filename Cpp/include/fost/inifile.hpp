@@ -1,11 +1,3 @@
-/**
-    Copyright 1998-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_INIFILE_HPP
 #define FOST_INIFILE_HPP
 #pragma once
@@ -26,10 +18,12 @@ namespace fostlib {
             invalid_ini_line(
                     const string &section,
                     const string &read,
-                    const string &processed) noexcept;
+                    const string &processed,
+                    felspar::source_location =
+                            felspar::source_location::current()) noexcept;
 
           protected:
-            const wchar_t *const message() const noexcept;
+            felspar::u8view message() const noexcept;
         };
 
 
@@ -44,7 +38,7 @@ namespace fostlib {
         void loadAll();
 
         string m_fileName;
-        std::list<std::shared_ptr<setting<json>>> m_settings;
+        std::vector<std::shared_ptr<setting<json>>> m_settings;
     };
 
 

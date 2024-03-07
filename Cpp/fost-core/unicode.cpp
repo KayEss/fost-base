@@ -1,11 +1,3 @@
-/**
-    Copyright 2001-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/insert.hpp>
 #include <fost/unicode.hpp>
@@ -26,7 +18,7 @@ std::size_t fostlib::utf::length(nliteral seq) {
     std::size_t count = 0;
     for (; *seq != 0; ++count) {
         std::size_t chars =
-                f5::cord::u8codepoint_length<exceptions::unicode_encoding>(
+                felspar::cord::u8codepoint_length<exceptions::unicode_encoding>(
                         *seq);
         for (std::size_t chk = 1; chk < chars; chk++) {
             unsigned char current(
@@ -90,19 +82,6 @@ namespace {
     std::size_t character_length(utf32 ch);
 
     template<>
-    std::size_t character_length<char>(utf32 ch) {
-        utf::assertValid(ch);
-        if (ch < 0x00080)
-            return 1;
-        else if (ch < 0x00800)
-            return 2;
-        else if (ch < 0x10000)
-            return 3;
-        else
-            return 4;
-    }
-
-    template<>
     std::size_t character_length<utf16>(utf32 ch) {
         utf::assertValid(ch);
         if (ch < 0x10000)
@@ -117,10 +96,10 @@ std::size_t fostlib::utf::utf16length(utf32 ch) {
 
 
 utf32 fostlib::utf::decode(nliteral seq, nliteral end) {
-    f5::cord::const_u8buffer buffer(
-            reinterpret_cast<const f5::cord::utf8 *>(seq),
-            reinterpret_cast<const f5::cord::utf8 *>(end));
-    const auto result = f5::cord::decode_one<
+    felspar::cord::const_u8buffer buffer(
+            reinterpret_cast<const felspar::cord::utf8 *>(seq),
+            reinterpret_cast<const felspar::cord::utf8 *>(end));
+    const auto result = felspar::cord::decode_one<
             exceptions::unicode_encoding, exceptions::unicode_encoding>(buffer);
     const utf32 ch = result.first;
     const std::size_t bytes = buffer.size() - result.second.size();
@@ -137,7 +116,8 @@ utf32 fostlib::utf::decode(nliteral seq, nliteral end) {
 std::size_t fostlib::utf::encode(utf32 ch, utf16 *begin, const utf16 *end) {
     try {
         auto encoded =
-                f5::cord::u16encode<fostlib::exceptions::unicode_encoding>(ch);
+                felspar::cord::u16encode<fostlib::exceptions::unicode_encoding>(
+                        ch);
         /// The `<= end` here looks wrong, but is right.
         if (begin + encoded.first <= end) {
             begin[0] = encoded.second[0];

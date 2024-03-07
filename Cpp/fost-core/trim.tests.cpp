@@ -1,15 +1,8 @@
-/**
-    Copyright 2001-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
 #include <fost/test>
 #include <fost/unicode>
 
-#define TRIM(X) (fostlib::trim(fostlib::nullable<f5::u8view>{X}))
-#define TRIM_WITH(X, Y) (fostlib::trim(f5::u8view{X}, f5::u8view{Y}))
+#define TRIM(X) (fostlib::trim(fostlib::nullable<felspar::u8view>{X}))
+#define TRIM_WITH(X, Y) (fostlib::trim(felspar::u8view{X}, felspar::u8view{Y}))
 
 FSL_TEST_SUITE(trim);
 

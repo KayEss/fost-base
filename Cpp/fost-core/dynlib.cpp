@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2019 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
 #include <fost/dynlib.hpp>
 #include <fost/insert.hpp>
@@ -84,9 +76,9 @@ fostlib::dynlib::dynlib(const string &lib) {
     };
     void *handle = tryload(lib);
 #if defined(__APPLE__)
-    f5::lstring ext = ".dylib";
+    felspar::lstring ext = ".dylib";
 #else
-    f5::lstring ext = ".so";
+    felspar::lstring ext = ".so";
 #endif
     auto next = [tryload, &handle](string dl) {
         if (handle == nullptr) handle = tryload(std::move(dl));

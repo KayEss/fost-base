@@ -1,19 +1,30 @@
-/**
-    Copyright 2010-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-core.hpp"
-#include "log.hpp"
 #include <fost/insert.hpp>
+#include <fost/log.hpp>
+#include <fost/threadsafe-store.hpp>
 
 #include <utility>
 
 
-using namespace fostlib;
+namespace {
+
+
+    fostlib::module const c_log{fostlib::c_fost, "logging"};
+
+
+    /// Logging cannot be performed until after `main` has been entered
+    std::mutex g_log_mtx;
+    std::vector<std::unique_ptr<fostlib::log::logging_sink_function_type>>
+            g_log_proc;
+    std::atomic<fostlib::log::logging_sink_function_type *> g_log_sink = []() {
+        g_log_proc.push_back(
+                std::make_unique<fostlib::log::logging_sink_function_type>(
+                        [](fostlib::log::message) {}));
+        return g_log_proc.back().get();
+    }();
+
+
+}
 
 
 /**
@@ -21,63 +32,17 @@ using namespace fostlib;
 */
 
 
-fostlib::log::message::message(
-        const fostlib::module &m, std::size_t l, f5::u8string n, const json &j)
-: when(timestamp::now()), level(l), name(n), body(j), m_module(m) {}
-
-
-fostlib::log::message::message(const fostlib::module &m, const json &j)
-: opt_module(fostlib::module(
-        m,
-        [&]() {
-            auto mod = j["module"];
-            if (mod.isarray()) {
-                std::string modpath;
-                for (const auto &p : mod) {
-                    if (not modpath.empty()) modpath += '/';
-                    modpath += static_cast<std::string_view>(coerce<string>(p));
-                }
-                return modpath;
-            } else {
-                return static_cast<std::string>(coerce<string>(j["module"]));
-            }
-        }())),
-  when(coerce<timestamp>(j["when"])),
-  level(coerce<std::size_t>(j["level"]["value"])),
-  name(coerce<f5::u8string>(j["level"]["name"])),
-  body(j["body"]),
-  m_module(opt_module.value()) {}
-
-
-fostlib::log::message::message(const message &m)
-: opt_module(m.opt_module),
-  when(m.when),
-  level(m.level),
-  name(m.name()),
-  body(m.body),
-  m_module(opt_module ? opt_module.value() : m.m_module) {}
-
-
-fostlib::log::message::message(message &&m)
-: opt_module(std::move(m.opt_module)),
-  when(std::move(m.when)),
-  level(m.level()),
-  name(std::move(m.name())),
-  body(std::move(m.body)),
-  m_module(opt_module ? opt_module.value() : m.m_module) {}
-
-
-json fostlib::coercer<json, fostlib::log::message>::coerce(
+fostlib::json fostlib::coercer<fostlib::json, fostlib::log::message>::coerce(
         const fostlib::log::message &m) {
     json::object_t js, lv;
 
-    lv["value"] = fostlib::coerce<json>(m.level());
-    lv["name"] = m.name();
+    lv["value"] = fostlib::coerce<json>(m.level);
+    lv["name"] = m.name;
 
-    js["when"] = fostlib::coerce<json>(m.when());
+    js["when"] = fostlib::coerce<json>(m.when);
     js["module"] = fostlib::coerce<json>(m.module());
     js["level"] = std::move(lv);
-    js["body"] = m.body();
+    js["body"] = m.body;
 
     return js;
 }
@@ -88,13 +53,17 @@ json fostlib::coercer<json, fostlib::log::message>::coerce(
 */
 
 
-void fostlib::log::log(fostlib::log::message m) {
-    fostlib::log::detail::log_proxy::proxy().log(std::move(m));
-}
+void fostlib::log::log(message m) { (*g_log_sink)(std::move(m)); }
 
 
-void fostlib::log::flush() {
-    fostlib::log::detail::log_proxy::proxy().exec([]() {});
+void fostlib::log::logging_function(logging_sink_function_type fn) {
+    {
+        std::scoped_lock _{g_log_mtx};
+        g_log_proc.push_back(
+                std::make_unique<logging_sink_function_type>(std::move(fn)));
+        g_log_sink = g_log_proc.back().get();
+    }
+    info(c_log, "New logging function in use");
 }
 
 
@@ -104,7 +73,7 @@ void fostlib::log::flush() {
 
 
 fostlib::log::detail::log_object::log_object(
-        const module &m, std::size_t level, f5::u8string name)
+        const module &m, std::size_t level, felspar::u8string name)
 : part(m), level(level), name(name) {}
 
 
@@ -118,3 +87,59 @@ fostlib::log::detail::log_object::log_object(log_object &&right)
 fostlib::log::detail::log_object::~log_object() try {
     fostlib::log::log(part, level, name, log_message);
 } catch (...) { absorb_exception(); }
+
+
+/*
+ * ## fostlib::log::detail::global_sink_base
+ */
+
+
+namespace {
+    auto &g_sink_registry() {
+        static fostlib::threadsafe_store<fostlib::log::detail::global_sink_base *>
+                s;
+        return s;
+    }
+}
+
+
+fostlib::log::detail::global_sink_base::global_sink_base(const string &n)
+: name(n) {
+    g_sink_registry().add(name(), this);
+}
+fostlib::log::detail::global_sink_base::~global_sink_base() {
+    g_sink_registry().remove(name(), this);
+}
+
+
+auto fostlib::log::named_logging_function(
+        felspar::u8view name, json const &config)
+        -> logging_sink_function_type {
+    auto fn = g_sink_registry().find(name);
+    if (fn.empty()) {
+        throw fostlib::exceptions::not_implemented{};
+    } else {
+        return [logger = fn[0]->construct(config)](message m) {
+            logger->log(std::move(m));
+        };
+    }
+}
+
+
+auto fostlib::log::configured_logging_function(json::array_t const &config)
+        -> logging_sink_function_type {
+    std::vector<std::shared_ptr<fostlib::log::detail::global_sink_wrapper_base>>
+            loggers;
+    for (auto logger : config) {
+        auto fn =
+                g_sink_registry().find(coerce<felspar::u8view>(logger["name"]));
+        if (not fn.empty()) {
+            loggers.push_back(fn[0]->construct(logger["configuration"]));
+        }
+    }
+    return [loggers = std::move(loggers)](message m) {
+        for (auto &logger : loggers) {
+            if (not logger->log(m)) { return; }
+        }
+    };
+}

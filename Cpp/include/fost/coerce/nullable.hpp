@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #ifndef FOST_COERCE_NULLABLE_HPP
 #define FOST_COERCE_NULLABLE_HPP
 #pragma once
@@ -15,6 +7,8 @@
 #include <fost/coerce.hpp>
 #include <fost/exception/null.hpp>
 
+#include <felspar/memory/holding_pen.hpp>
+
 
 namespace fostlib {
 
@@ -22,29 +16,64 @@ namespace fostlib {
     template<typename T, typename F>
     struct coercer<T, std::optional<F>> {
         template<typename A>
-        auto coerce(A &&f) {
+        auto coerce(A &&f, felspar::source_location loc) {
             if (not f) {
-                throw exceptions::null{__PRETTY_FUNCTION__};
+                throw exceptions::null{loc};
             } else {
-                return fostlib::coerce<T>(*std::forward<A>(f));
+                return fostlib::coerce<T>(*std::forward<A>(f), std::move(loc));
             }
         }
     };
     template<typename T, typename F>
     struct coercer<std::optional<T>, F> {
         template<typename A>
-        std::optional<T> coerce(A &&f) {
-            return fostlib::coerce<T>(std::forward<A>(f));
+        std::optional<T> coerce(A &&f, felspar::source_location loc) {
+            return fostlib::coerce<T>(std::forward<A>(f), std::move(loc));
         }
     };
     template<typename T, typename F>
     struct coercer<std::optional<T>, std::optional<F>> {
         template<typename A>
-        std::optional<T> coerce(A &&f) {
+        std::optional<T> coerce(A &&f, felspar::source_location loc) {
             if (not f) {
                 return std::nullopt;
             } else {
-                return fostlib::coerce<T>(*std::forward<A>(f));
+                return fostlib::coerce<T>(*std::forward<A>(f), std::move(loc));
+            }
+        }
+    };
+
+
+    template<typename T, typename F>
+    struct coercer<T, felspar::memory::holding_pen<F>> {
+        template<typename A>
+        auto coerce(A &&f, felspar::source_location loc) {
+            if (not f) {
+                throw exceptions::null{loc};
+            } else {
+                return fostlib::coerce<T>(*std::forward<A>(f), std::move(loc));
+            }
+        }
+    };
+    template<typename T, typename F>
+    struct coercer<felspar::memory::holding_pen<T>, F> {
+        template<typename A>
+        felspar::memory::holding_pen<T>
+                coerce(A &&f, felspar::source_location loc) {
+            return fostlib::coerce<T>(std::forward<A>(f), std::move(loc));
+        }
+    };
+    template<typename T, typename F>
+    struct coercer<
+            felspar::memory::holding_pen<T>,
+            felspar::memory::holding_pen<F>> {
+        template<typename A>
+        felspar::memory::holding_pen<T>
+                coerce(A &&f, felspar::source_location loc) {
+            if (not f) {
+                return std::nullopt;
+            } else {
+                return fostlib::coerce<T>(*std::forward<A>(f), std::move(loc));
             }
         }
     };

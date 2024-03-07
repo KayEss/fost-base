@@ -1,11 +1,3 @@
-/**
-    Copyright 1995-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include "fost-cli.hpp"
 #include <fost/arguments.hpp>
 #include <iostream>
@@ -67,10 +59,9 @@ string fostlib::arguments::environment(const string &) {
 void fostlib::arguments::environment(
         const string &envName, const string &section, const string &name) {
     if (m_environment.find(envName) != m_environment.end()) {
-        m_registered.push_back(
-                boost::shared_ptr<setting<json>>(new setting<json>(
-                        "Environment", section, name,
-                        json(m_environment[envName]), false)));
+        m_registered.push_back(std::make_shared<setting<json>>(
+                "Environment", section, name, json(m_environment[envName]),
+                false));
     }
 }
 
@@ -80,10 +71,9 @@ void fostlib::arguments::argument(
         const string &section,
         const string &name) {
     if (argument < size()) {
-        m_registered.push_back(
-                boost::shared_ptr<setting<json>>(new setting<json>(
-                        "Command argument", section, name,
-                        json(m_arguments[argument]), false)));
+        m_registered.push_back(std::make_shared<setting<json>>(
+                "Command argument", section, name, json(m_arguments[argument]),
+                false));
     }
 }
 
@@ -99,23 +89,22 @@ nullable<string> fostlib::arguments::commandSwitch(const string &s) const {
 
 void fostlib::arguments::commandSwitch(
         const string &theSwitch, const string &section, const string &name) {
-    if (m_switches.find(theSwitch) != m_switches.end())
-        m_registered.push_back(boost::shared_ptr<setting<json>>(new setting<json>(
+    if (m_switches.find(theSwitch) != m_switches.end()) {
+        m_registered.push_back(std::make_shared<setting<json>>(
                 "Command switch", section, name,
                 json::parse(m_switches[theSwitch], json(m_switches[theSwitch])),
-                false)));
+                false));
+    }
 }
 
 
 void fostlib::arguments::commandSwitch(
         const string &theSwitch, const setting<json> &setting_) {
     if (m_switches.find(theSwitch) != m_switches.end())
-        m_registered.push_back(
-                boost::shared_ptr<setting<json>>(new setting<json>(
-                        "Command switch", setting_,
-                        json::parse(
-                                m_switches[theSwitch],
-                                json(m_switches[theSwitch])))));
+        m_registered.push_back(std::make_shared<setting<json>>(
+                "Command switch", setting_,
+                json::parse(
+                        m_switches[theSwitch], json(m_switches[theSwitch]))));
 }
 
 
