@@ -1,5 +1,11 @@
+add_library(fost-core-test
+        fost-core-test.cpp
+    )
+target_link_libraries(fost-core-test PUBLIC fost-cli)
+
+
 if(TARGET stress)
-    add_test_run(stress fost-core fost-cli TESTS
+    add_test_run(stress fost-core fost-cli fost-core-test TESTS
             dynlib.cpp
             settings.cpp
             thread.cpp

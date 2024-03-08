@@ -121,6 +121,7 @@ std::chrono::system_clock::time_point fostlib::coercer<
     case 10: ss >> std::get_time(&t, "%Y-%m-%d"); break;
     case 16: [[fallthrough]];
     case 17: ss >> std::get_time(&t, "%Y-%m-%dT%H:%M"); break;
+    case 19: [[fallthrough]];
     case 20: ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%SZ"); break;
     case 26: [[fallthrough]];
     case 27: ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S.") >> us; break;

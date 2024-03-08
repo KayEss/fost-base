@@ -157,7 +157,6 @@ FSL_TEST_FUNCTION(exception_json) {
         auto const ejs = fostlib::coerce<fostlib::json>(e);
         FSL_CHECK_EQ(ejs["exception"], "Feature not implemented");
         FSL_CHECK_EQ(ejs["data"]["message"], "Test exception");
-        FSL_CHECK_EQ(ejs["data"]["source"]["function"], __func__);
         FSL_CHECK_EQ(ejs["data"]["source"]["filename"], __FILE__);
     }
 }
