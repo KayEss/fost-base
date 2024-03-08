@@ -1,35 +1,6 @@
 #include "fost-core.hpp"
 
 
-/// Historically we've used wchar_t as the UTF16 type on both Linux/Mac
-/// and on Windows, despite it being 32 bit on Linux/Mac. This implements
-/// that until we can deprecate all of this in favour of U16 and U32 APIs.
-std::string fostlib::transitional_stringify(fostlib::wliteral s) {
-    std::string r;
-    while (s != nullptr && *s) {
-        char32_t cp;
-        if (felspar::cord::is_surrogate(*s)) {
-            char16_t const s1 = *s++;
-            if (not *s) {
-                throw fostlib::exceptions::not_implemented{
-                        "Truncated surrogate pair"};
-            }
-            char16_t const s2 = *s++;
-            if (not felspar::cord::is_surrogate(s2)) {
-                throw fostlib::exceptions::not_implemented{
-                        "Second surrogate isn't a valid surrogate"};
-            }
-            cp = felspar::cord::u16decode(s1, s2);
-        } else {
-            cp = *s++;
-        }
-        const auto encoded = felspar::cord::u8encode(cp);
-        r.append(encoded.second.data(), encoded.first);
-    }
-    return r;
-}
-
-
 /**
  * ## `string` implementation
  */

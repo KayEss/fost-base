@@ -12,10 +12,6 @@
 namespace fostlib {
 
 
-    /// Transitional conversion between wchar_t based strings and UTF-8
-    std::string transitional_stringify(fostlib::wliteral s);
-
-
     /// ## String
     /**
         Interim wrapper around u8string. The intention is that we merge the
