@@ -185,6 +185,14 @@ namespace fostlib {
         string coerce(const char str[L]) { return string(str); }
     };
 
+    template<>
+    struct coercer<felspar::u8string, std::vector<unsigned char>> {
+        felspar::u8string coerce(std::vector<unsigned char> const &v) {
+            return felspar::u8string{
+                    reinterpret_cast<char const *>(v.data()), v.size()};
+        }
+    };
+
 
     template<>
     struct coercer<string, float> {
