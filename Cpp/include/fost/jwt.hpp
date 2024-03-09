@@ -76,7 +76,7 @@ namespace fostlib {
             mint &claim(felspar::u8view url, const json &value);
 
             /// Return the token
-            std::string token(felspar::buffer<const felspar::byte> key);
+            std::string token(felspar::buffer<const felspar::byte> key) const;
 
             /// Return the current payload
             const json &payload() const { return m_payload; }

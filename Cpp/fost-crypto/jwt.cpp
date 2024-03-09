@@ -60,7 +60,8 @@ fostlib::jwt::mint &fostlib::jwt::mint::claim(felspar::u8view u, const json &j) 
 }
 
 
-std::string fostlib::jwt::mint::token(felspar::buffer<const felspar::byte> key) {
+std::string fostlib::jwt::mint::token(
+        felspar::buffer<const felspar::byte> key) const {
     std::string str_header, str_payload;
     json::unparse(str_header, header, false);
     json::unparse(str_payload, m_payload, false);
