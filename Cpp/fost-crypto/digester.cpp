@@ -7,10 +7,12 @@
 #include <fstream>
 #include <fost/filesystem.hpp>
 
-#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
-#include <crypto++/md5.h>
+#include <crypto++/keccak.h>
 #include <crypto++/ripemd.h>
 #include <crypto++/sha.h>
+
+#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
+#include <crypto++/md5.h>
 
 
 struct fostlib::digester::impl {
@@ -47,6 +49,8 @@ fostlib::digester::digester(digester_fn hash) {
         m_implementation = std::make_unique<hash_impl<CryptoPP::SHA256>>();
     } else if (hash == fostlib::ripemd256) {
         m_implementation = std::make_unique<hash_impl<CryptoPP::RIPEMD256>>();
+    } else if (hash == fostlib::keccak256) {
+        m_implementation = std::make_unique<hash_impl<CryptoPP::Keccak_256>>();
     } else if (hash == fostlib::md5) {
         m_implementation = std::make_unique<hash_impl<CryptoPP::Weak::MD5>>();
     } else {
@@ -54,7 +58,8 @@ fostlib::digester::digester(digester_fn hash) {
                 "fostlib::digester::digester( fostlib::string (*)( const "
                 "fostlib::string & ) )"
                 "with other hash functions",
-                "Only sha1, sha256, ripemd256 and md5 are supported right now");
+                "Only keccak-256, sha1, sha256, ripemd256 and md5 are "
+                "supported right now");
     }
 }
 

@@ -67,6 +67,7 @@ namespace fostlib {
 
 
     /// ## Cryptographic hashing functions
+    FOST_CRYPTO_DECLSPEC string keccak256(const felspar::u8view &);
     FOST_CRYPTO_DECLSPEC string md5(const felspar::u8view &);
     FOST_CRYPTO_DECLSPEC string sha1(const felspar::u8view &);
     FOST_CRYPTO_DECLSPEC string sha256(const felspar::u8view &);
@@ -99,6 +100,11 @@ namespace fostlib {
                 return *this;
             }
         }
+        template<std::size_t N>
+        digester &operator<<(std::array<std::byte, N> const &a) {
+            return *this << const_memory_block(a.data(), a.data() + a.size());
+        }
+
         digester &operator<<(felspar::u8view);
         digester &operator<<(std::string_view sv) {
             return *this << const_memory_block{
@@ -151,8 +157,9 @@ namespace fostlib {
             if (v.size()) {
                 const unsigned char *begin = v.data();
                 return *this << const_memory_block(begin, begin + v.size());
-            } else
+            } else {
                 return *this;
+            }
         }
         hmac &operator<<(fostlib::nliteral n) {
             return *this << fostlib::utf8_string(n);

@@ -3,10 +3,12 @@
 #include <fost/crypto.hpp>
 #include <fost/exception/out_of_range.hpp>
 
-#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
-#include <crypto++/md5.h>
+#include <crypto++/keccak.h>
 #include <crypto++/ripemd.h>
 #include <crypto++/sha.h>
+
+#define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
+#include <crypto++/md5.h>
 
 
 using namespace fostlib;
@@ -33,6 +35,11 @@ namespace {
                         result.data(), result.size()});
         return coerce<string>(coerce<hex_string>(result));
     }
+}
+
+
+fostlib::string fostlib::keccak256(felspar::u8view const &text) {
+    return hash<CryptoPP::Keccak_256>(text);
 }
 
 

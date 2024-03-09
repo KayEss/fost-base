@@ -98,3 +98,27 @@ FSL_TEST_FUNCTION(md5_parts) {
             fostlib::coerce<fostlib::hex_string>(ex1.digest()),
             fostlib::hex_string("9e107d9d372bb6826bd81d3542a419d6"));
 }
+
+
+/**
+    ## Keccak 256
+ */
+
+
+FSL_TEST_FUNCTION(keccak256_yoda) {
+    fostlib::digester ex1(fostlib::keccak256);
+    ex1 << fostlib::string("Yoda said, Do or do not. There is not try.");
+    FSL_CHECK_EQ(
+            fostlib::coerce<fostlib::hex_string>(ex1.digest()),
+            fostlib::hex_string{"908629918e36a3dea875b9d11f725aabf68a61d91f1a67"
+                                "5e73c426e18d9781da"});
+}
+FSL_TEST_FUNCTION(keccak256_yoda_parts) {
+    fostlib::digester ex1(fostlib::keccak256);
+    ex1 << fostlib::string{"Yoda said, Do or do not. "};
+    ex1 << felspar::u8view{"There is not try."};
+    FSL_CHECK_EQ(
+            fostlib::coerce<fostlib::hex_string>(ex1.digest()),
+            fostlib::hex_string{"908629918e36a3dea875b9d11f725aabf68a61d91f1a67"
+                                "5e73c426e18d9781da"});
+}
