@@ -21,16 +21,37 @@ namespace fostlib {
         hex_string coerce(unsigned char c);
     };
 
-    /// Allow a hex string to be generated from a Boost array
-    template<std::size_t L>
-    struct coercer<hex_string, std::array<unsigned char, L>> {
+    /// Allow a hex string to be generated from a span
+    template<std::size_t N>
+    struct coercer<hex_string, std::span<unsigned char const, N>> {
         /// Perform the coercion
-        hex_string coerce(const std::array<unsigned char, L> &v) {
+        hex_string coerce(std::span<unsigned char const> const v) {
             hex_string r;
-            r.reserve((L + 1) / 2);
-            for (std::size_t c = 0; c != L; ++c)
+            r.reserve((v.size() + 1) / 2);
+            for (std::size_t c = 0; c != v.size(); ++c) {
                 r += fostlib::coerce<hex_string>(v[c]);
+            }
             return r;
+        }
+    };
+    template<std::size_t N>
+    struct coercer<hex_string, std::span<std::byte const, N>> {
+        hex_string coerce(std::span<std::byte const, N> const b) {
+            return fostlib::coerce<hex_string>(std::span{
+                    reinterpret_cast<unsigned char const *>(b.data()),
+                    b.size()});
+        }
+    };
+    template<std::size_t N>
+    struct coercer<hex_string, std::array<unsigned char, N>> {
+        hex_string coerce(std::array<unsigned char, N> const &a) {
+            return fostlib::coerce<hex_string>(std::span{a});
+        }
+    };
+    template<std::size_t N>
+    struct coercer<hex_string, std::array<std::byte, N>> {
+        hex_string coerce(std::array<std::byte, N> const &a) {
+            return fostlib::coerce<hex_string>(std::span{a});
         }
     };
 
@@ -39,6 +60,14 @@ namespace fostlib {
     struct FOST_CORE_DECLSPEC coercer<hex_string, std::vector<unsigned char>> {
         /// Perform the coercion
         hex_string coerce(const std::vector<unsigned char> &v);
+    };
+    template<>
+    struct coercer<hex_string, std::vector<std::byte>> {
+        hex_string coerce(std::vector<std::byte> const &v) {
+            return fostlib::coerce<hex_string>(std::span{
+                    reinterpret_cast<unsigned char const *>(v.data()),
+                    v.size()});
+        }
     };
 
     /// Allow a normal string to be generated from a hex string
@@ -57,6 +86,11 @@ namespace fostlib {
         std::size_t coerce(const hex_string &h);
     };
 
+    /// Convert a hex string to a vector of bytes
+    template<>
+    struct FOST_CORE_DECLSPEC coercer<std::vector<std::byte>, hex_string> {
+        std::vector<std::byte> coerce(hex_string const &);
+    };
 
 }
 

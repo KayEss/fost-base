@@ -256,3 +256,26 @@ std::size_t fostlib::coercer<std::size_t, fostlib::hex_string>::coerce(
                 "Could not parse hex string", s.underlying().underlying());
     }
 }
+
+std::vector<std::byte>
+        fostlib::coercer<std::vector<std::byte>, fostlib::hex_string>::coerce(
+                hex_string const &s) {
+    std::vector<std::byte> ret;
+    auto pos = s.begin();
+    auto const end = s.end();
+    while (pos != end) {
+        unsigned char b{};
+        if (boost::spirit::qi::phrase_parse(
+                    pos, end,
+                    boost::spirit::qi::uint_parser<unsigned char, 16, 2, 2>(),
+                    boost::spirit::qi::space, b)) {
+            ret.push_back(std::byte{b});
+        } else {
+            throw fostlib::exceptions::parse_error{
+                    std::string{"Could not parse hex string '"} + char(*pos)
+                            + "'",
+                    s.underlying().underlying()};
+        }
+    }
+    return ret;
+}
