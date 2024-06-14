@@ -53,6 +53,18 @@ fostlib::jwt::mint &fostlib::jwt::mint::subject(const string &s) {
     return *this;
 }
 
+std::chrono::system_clock::time_point fostlib::jwt::mint::expires(
+        std::chrono::system_clock::duration const tp,
+        bool const add_issued_claim) {
+    auto const now = std::chrono::system_clock::now();
+    std::chrono::system_clock::time_point const exp = now + tp;
+    if (add_issued_claim) {
+        insert(m_payload, "iat", std::chrono::system_clock::to_time_t(now));
+    }
+    insert(m_payload, "exp", std::chrono::system_clock::to_time_t(exp));
+    return exp;
+}
+
 
 fostlib::jwt::mint &fostlib::jwt::mint::claim(felspar::u8view u, const json &j) {
     insert(m_payload, u, j);

@@ -55,20 +55,9 @@ namespace fostlib {
             mint &subject(const string &);
 
             /// Set the token to expire after this amount of time
-            template<typename R, typename P>
             std::chrono::system_clock::time_point
-                    expires(std::chrono::duration<R, P> const tp,
-                            bool const add_issued_claim = true) {
-                auto const now = std::chrono::system_clock::now();
-                auto const exp = now + tp;
-                if (add_issued_claim) {
-                    insert(m_payload, "iss",
-                           std::chrono::system_clock::to_time_t(now));
-                }
-                insert(m_payload, "exp",
-                       std::chrono::system_clock::to_time_t(exp));
-                return exp;
-            }
+                    expires(std::chrono::system_clock::duration,
+                            bool add_issued_claim = true);
 
             /// Set a claim. If the claim name is not listed at
             /// http://www.iana.org/assignments/jwt/jwt.xhtml then
