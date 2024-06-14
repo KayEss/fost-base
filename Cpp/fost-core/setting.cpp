@@ -81,7 +81,7 @@ void fostlib::setting<json>::construct(
 }
 
 
-fostlib::setting<json>::~setting<json>() {
+fostlib::setting<json>::~setting() {
     try {
 #ifdef WRITELOCKONLY
         std::lock_guard<std::mutex> lock(g_mutex());
