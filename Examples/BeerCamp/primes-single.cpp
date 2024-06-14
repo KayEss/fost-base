@@ -17,8 +17,7 @@ namespace {
     /// A function for returning the next higher prime number.
     /// State is stored in the parameter passed to it
     unsigned int next_prime(unsigned int &base) {
-        while (!is_prime(base++))
-            ;
+        while (!is_prime(base++));
         return base - 1;
     }
 

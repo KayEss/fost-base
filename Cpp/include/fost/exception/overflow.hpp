@@ -52,8 +52,8 @@ namespace fostlib {
                     felspar::source_location sl =
                             felspar::source_location::current()) noexcept
             : overflow<string>{
-                    msg, coerce<string>(n), coerce<string>(d),
-                    coerce<string>(m), std::move(sl)} {}
+                      msg, coerce<string>(n), coerce<string>(d),
+                      coerce<string>(m), std::move(sl)} {}
             overflow(
                     const T n,
                     const T d,
@@ -61,8 +61,8 @@ namespace fostlib {
                     felspar::source_location sl =
                             felspar::source_location::current()) noexcept
             : overflow<string>{
-                    coerce<string>(n), coerce<string>(d), coerce<string>(m),
-                    std::move(sl)} {}
+                      coerce<string>(n), coerce<string>(d), coerce<string>(m),
+                      std::move(sl)} {}
         };
 
 

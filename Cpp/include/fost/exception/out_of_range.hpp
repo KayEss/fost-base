@@ -44,8 +44,8 @@ namespace fostlib {
                     felspar::source_location sl =
                             felspar::source_location::current()) noexcept
             : out_of_range_string{
-                    coerce<string>(min), coerce<string>(max),
-                    coerce<string>(value), std::move(sl)} {}
+                      coerce<string>(min), coerce<string>(max),
+                      coerce<string>(value), std::move(sl)} {}
             out_of_range(
                     const string &message,
                     const T min,
@@ -54,8 +54,8 @@ namespace fostlib {
                     felspar::source_location sl =
                             felspar::source_location::current()) noexcept
             : out_of_range_string{
-                    message, coerce<string>(min), coerce<string>(max),
-                    coerce<string>(value), std::move(sl)} {}
+                      message, coerce<string>(min), coerce<string>(max),
+                      coerce<string>(value), std::move(sl)} {}
         };
 
 

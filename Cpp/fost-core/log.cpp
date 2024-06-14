@@ -113,8 +113,8 @@ fostlib::log::detail::global_sink_base::~global_sink_base() {
 
 
 auto fostlib::log::named_logging_function(
-        felspar::u8view name, json const &config)
-        -> logging_sink_function_type {
+        felspar::u8view name,
+        json const &config) -> logging_sink_function_type {
     auto fn = g_sink_registry().find(name);
     if (fn.empty()) {
         throw fostlib::exceptions::not_implemented{};
