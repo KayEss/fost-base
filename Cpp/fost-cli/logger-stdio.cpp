@@ -60,8 +60,6 @@ namespace {
             return true;
         }
     };
-
-    const fostlib::log::sink_function<ostream_logger> std_out("stdout");
 }
 
 

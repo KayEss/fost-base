@@ -27,7 +27,4 @@ namespace {
     };
 
 
-    const fostlib::log::sink_function<line_logger> line{"line"};
-
-
 }

@@ -212,8 +212,6 @@ namespace {
             return true;
         }
     };
-    const fostlib::log::sink_function<log_tests_global>
-            c_log_tests_global("log-tests-global");
 }
 // FSL_TEST_FUNCTION(global_with_sink) {
 //     fostlib::log::scoped_sink<capture_copy> cc;
@@ -260,8 +258,6 @@ namespace {
             return false;
         }
     };
-    const fostlib::log::sink_function<count_log_messages>
-            c_count_log_messages("log-message-count");
 }
 // FSL_TEST_FUNCTION(large_number_of_log_messages) {
 //     g_messages_seen = 0;

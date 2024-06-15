@@ -10,7 +10,6 @@
 
 
 #include <fost/log-message.hpp>
-#include <fost/log-sinks.hpp>
 
 #include <functional>
 #include <type_traits>
@@ -54,25 +53,6 @@ namespace fostlib {
             push_back(array, fostlib::coerce<fostlib::json>(a));
             log(m, level, name, std::move(array), std::forward<J>(j)...);
         }
-
-
-        /// Create an instance of this class to register a global sink
-        template<typename F>
-        class sink_function : detail::global_sink_base {
-            /// Create the logging object itself
-            std::shared_ptr<detail::global_sink_wrapper_base>
-                    construct(const json &configuration) const {
-                return std::make_shared<detail::global_sink_wrapper<F>>(
-                        name(), configuration);
-            }
-
-          public:
-            /// Create a global sink providing the configuration name
-            sink_function(const string &name) : global_sink_base(name) {}
-
-            /// The name of the sink used for configuration
-            using global_sink_base::name;
-        };
 
 
         namespace detail {
@@ -122,21 +102,6 @@ namespace fostlib {
 
         /// Provide the logging sink function that is to be used
         void logging_function(logging_sink_function_type);
-
-        /// Return a named logging function
-        logging_sink_function_type
-                named_logging_function(felspar::u8view, json const &);
-
-        /// Return a logging function based on the provided JSON configuration.
-        /// The resulting logging function will only be thread safe if the
-        /// underlying logging are
-        logging_sink_function_type
-                configured_logging_function(json::array_t const &);
-
-        /// Single function to set up logging given a configuration. Assumes
-        /// that the underlying log functions are not thread safe so will add
-        /// thread synchronisation
-        // void load_logging_configuration(json::array_t const &);
 
 
 /// Used to create a logging level

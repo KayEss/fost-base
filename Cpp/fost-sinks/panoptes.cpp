@@ -4,12 +4,6 @@
 #include <fstream>
 
 
-namespace {
-    const fostlib::log::sink_function<fostlib::log::panoptes>
-            c_logger("panoptes");
-}
-
-
 fostlib::log::panoptes::panoptes(const fostlib::json &) {}
 
 
