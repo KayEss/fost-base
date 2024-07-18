@@ -216,6 +216,10 @@ namespace fostlib {
             }
             return *this;
         }
+        json &operator=(json const &j) {
+            m_element = j.m_element;
+            return *this;
+        }
 
         /// Equality checking
         bool operator==(json const &) const;
