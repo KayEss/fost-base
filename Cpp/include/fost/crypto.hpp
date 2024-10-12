@@ -71,6 +71,8 @@ namespace fostlib {
     FOST_CRYPTO_DECLSPEC string md5(const felspar::u8view &);
     FOST_CRYPTO_DECLSPEC string sha1(const felspar::u8view &);
     FOST_CRYPTO_DECLSPEC string sha256(const felspar::u8view &);
+    FOST_CRYPTO_DECLSPEC string sha512(const felspar::u8view &);
+    FOST_CRYPTO_DECLSPEC string sha512(std::filesystem::path const &);
     FOST_CRYPTO_DECLSPEC string ripemd256(const felspar::u8view &);
 
     void sha1_into(

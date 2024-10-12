@@ -35,6 +35,18 @@ namespace {
                         result.data(), result.size()});
         return coerce<string>(coerce<hex_string>(result));
     }
+    template<typename H>
+    inline string hash(std::filesystem::path const &fn) {
+        std::array<unsigned char, H::DIGESTSIZE> result;
+        std::vector<unsigned char> d(std::filesystem::file_size(fn));
+        std::ifstream{fn, std::ios::binary}.read(
+                reinterpret_cast<char *>(d.data()), d.size());
+        hash_into<H>(
+                std::span<unsigned char const>{d.data(), d.size()},
+                std::span<unsigned char, H::DIGESTSIZE>{
+                        result.data(), result.size()});
+        return coerce<string>(coerce<hex_string>(result));
+    }
 }
 
 
@@ -60,6 +72,13 @@ string fostlib::sha1(const felspar::u8view &text) {
 
 string fostlib::sha256(const felspar::u8view &text) {
     return hash<CryptoPP::SHA256>(text);
+}
+
+string fostlib::sha512(const felspar::u8view &text) {
+    return hash<CryptoPP::SHA512>(text);
+}
+string fostlib::sha512(std::filesystem::path const &fn) {
+    return hash<CryptoPP::SHA512>(fn);
 }
 
 
