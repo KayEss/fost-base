@@ -10,9 +10,9 @@
 #include <fstream>
 #include <span>
 
-// TODO Older libc6-dev packages don't provide this header :(
-// This needs to be fixed using C++17's `__has_include`
-// #include <sys/random.h>
+#if __has_include(<sys/random.h>)
+#include <sys/random.h>
+#endif
 
 
 namespace fostlib {
@@ -56,12 +56,13 @@ namespace fostlib {
     template<std::size_t N>
     std::array<felspar::byte, N> crypto_bytes() {
         std::array<felspar::byte, N> buffer;
+#if __has_include(<sys/random.h>)
+        for (auto n = N; n > 0;
+             n = n - getrandom(buffer.data() + (N - n), n, 0));
+#else
         std::ifstream urandom("/dev/urandom");
         urandom.read(reinterpret_cast<char *>(buffer.data()), buffer.size());
-        // TODO Until we can check for the presence of the sys/random.h
-        // header we have to use the slower implementation
-        // for ( auto n = N; n > 0; n = n - getrandom(buffer.data() + (N - n),
-        // n, 0) );
+#endif
         return buffer;
     }
 
