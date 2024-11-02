@@ -201,6 +201,9 @@ namespace fostlib {
     inline string operator+(nliteral l, const string &r) {
         return felspar::u8view{l, std::strlen(l)} + r;
     }
+    inline string operator+(felspar::u8string l, std::string_view const r) {
+        return l + felspar::u8view(r);
+    }
 
 
 }
