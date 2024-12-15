@@ -39,7 +39,8 @@ fostlib::json fostlib::performance::current() {
     });
     return ret;
 }
-auto fostlib::performance::values() -> std::vector<std::pair<jcursor, int64_t>> {
+auto fostlib::performance::values()
+        -> std::vector<std::pair<jcursor, int64_t>> {
     std::vector<std::pair<jcursor, int64_t>> values;
     counters().for_each([&values](auto v) {
         auto const value = v->value();
