@@ -203,8 +203,9 @@ FSL_TEST_FUNCTION(json_object) {
     FSL_CHECK_EQ(
             fostlib::json::parse("{\"key\":\"value\"}")["key"],
             fostlib::json("value"));
-    FSL_CHECK(fostlib::json::parse("{\"0\":\"value 1\", \"1\":\"value 2\"}")
-                      .isobject());
+    FSL_CHECK(
+            fostlib::json::parse("{\"0\":\"value 1\", \"1\":\"value 2\"}")
+                    .isobject());
     FSL_CHECK_EQ(
             fostlib::json::parse("{\"0\":\"value 1\", \"1\":\"value 2\"}")["0"],
             fostlib::json("value 1"));

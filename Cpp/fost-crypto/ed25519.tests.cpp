@@ -93,11 +93,12 @@ FSL_TEST_FUNCTION(sign_jwt1) {
                     + signature_b64.underlying().underlying());
     auto const signature =
             fostlib::coerce<std::vector<felspar::byte>>(signature_b64);
-    FSL_CHECK(fostlib::ed25519::verify(
-            keys.pub(),
-            static_cast<felspar::buffer<const felspar::byte>>(
-                    header_b64 + "." + payload_b64),
-            signature));
+    FSL_CHECK(
+            fostlib::ed25519::verify(
+                    keys.pub(),
+                    static_cast<felspar::buffer<const felspar::byte>>(
+                            header_b64 + "." + payload_b64),
+                    signature));
     FSL_CHECK(not fostlib::ed25519::verify(
             fostlib::ed25519::keypair{}.pub(),
             felspar::buffer<const felspar::byte>{header_b64 + "." + payload_b64},

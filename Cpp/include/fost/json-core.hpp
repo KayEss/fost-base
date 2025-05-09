@@ -309,8 +309,9 @@ namespace fostlib {
         static json parse(const string &, const json &def);
         /// Overloads to handle various other types we may want to parse
         static json parse(felspar::buffer<unsigned char const> b) {
-            return parse(felspar::u8view{
-                    reinterpret_cast<char const *>(b.data()), b.size()});
+            return parse(
+                    felspar::u8view{
+                            reinterpret_cast<char const *>(b.data()), b.size()});
         }
         static json parse(char const *l) { return parse(string(l)); }
         static json parse(felspar::u16view);
@@ -321,8 +322,9 @@ namespace fostlib {
         static json sloppy_parse(const string &, const json &def);
         /// Overloads to handle various other types we may want to parse
         static json sloppy_parse(felspar::buffer<unsigned char const> b) {
-            return sloppy_parse(felspar::u8view{
-                    reinterpret_cast<char const *>(b.data()), b.size()});
+            return sloppy_parse(
+                    felspar::u8view{
+                            reinterpret_cast<char const *>(b.data()), b.size()});
         }
         static json sloppy_parse(char const *l) {
             return sloppy_parse(string(l));

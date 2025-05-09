@@ -49,8 +49,9 @@ namespace {
 
       public:
         ostream_logger(const fostlib::json &conf)
-        : log_level(fostlib::coerce<fostlib::nullable<int>>(conf["log-level"])
-                            .value_or(fostlib::log::error_level_tag::level())),
+        : log_level(
+                  fostlib::coerce<fostlib::nullable<int>>(conf["log-level"])
+                          .value_or(fostlib::log::error_level_tag::level())),
           colour(fostlib::coerce<fostlib::nullable<bool>>(conf["color"])
                          .value_or(false)),
           channel(conf["channel"] == fostlib::json("stderr") ? std::cerr

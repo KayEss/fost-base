@@ -68,11 +68,13 @@ void fostlib::ini_file::loadAll() {
                         value(line.substr(pos + 1));
                 json js = json::parse(value, json());
                 if (!value.empty() && js.isnull()) {
-                    m_settings.push_back(std::make_shared<setting<string>>(
-                            m_fileName, section, name, value, false));
+                    m_settings.push_back(
+                            std::make_shared<setting<string>>(
+                                    m_fileName, section, name, value, false));
                 } else {
-                    m_settings.push_back(std::make_shared<setting<json>>(
-                            m_fileName, section, name, js, false));
+                    m_settings.push_back(
+                            std::make_shared<setting<json>>(
+                                    m_fileName, section, name, js, false));
                 }
             }
             line = "";

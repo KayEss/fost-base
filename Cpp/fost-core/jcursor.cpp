@@ -149,8 +149,9 @@ namespace {
             // Copy the array
             fostlib::json::array_t &array =
                     *std::get<fostlib::json::array_p>(element);
-            auto copy(std::make_shared<fostlib::json::array_t>(
-                    array.begin(), array.end()));
+            auto copy(
+                    std::make_shared<fostlib::json::array_t>(
+                            array.begin(), array.end()));
             while (copy->size() <= k) copy->push_back(fostlib::json{});
             element = copy;
             return &(*copy)[k];
@@ -168,8 +169,9 @@ namespace {
             /// requested key
             fostlib::json::object_t &object =
                     *std::get<fostlib::json::object_p>(element);
-            auto copy(std::make_shared<fostlib::json::object_t>(
-                    object.begin(), object.end()));
+            auto copy(
+                    std::make_shared<fostlib::json::object_t>(
+                            object.begin(), object.end()));
             element = copy;
             return &(*copy)[k];
         }

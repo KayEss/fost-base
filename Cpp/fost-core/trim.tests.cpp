@@ -21,12 +21,14 @@ FSL_TEST_FUNCTION(basic_trim) {
             fostlib::trim(fostlib::nullable<fostlib::ascii_string>{" string "}),
             "string");
     FSL_CHECK_EQ(
-            fostlib::trim(fostlib::nullable<fostlib::utf8_string>{
-                    "\xE2\x80\x82\xE2\x80\x83\xE2\x80\x84string\x20"}),
+            fostlib::trim(
+                    fostlib::nullable<fostlib::utf8_string>{
+                            "\xE2\x80\x82\xE2\x80\x83\xE2\x80\x84string\x20"}),
             "string");
     FSL_CHECK_EQ(
-            fostlib::trim(fostlib::nullable<fostlib::string>{
-                    "\xE2\x80\x82\xE2\x80\x83\xE2\x80\x84string\x20"}),
+            fostlib::trim(
+                    fostlib::nullable<fostlib::string>{
+                            "\xE2\x80\x82\xE2\x80\x83\xE2\x80\x84string\x20"}),
             "string");
 }
 

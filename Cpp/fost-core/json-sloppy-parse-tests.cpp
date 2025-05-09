@@ -176,8 +176,9 @@ FSL_TEST_FUNCTION(json_object) {
             fostlib::json("value //"));
 
     FSL_CHECK_EQ(
-            fostlib::json::sloppy_parse("{\"key\":\"value\", /*fake-value*/ "
-                                        "\"key2\":\"real-value\"}")["key2"],
+            fostlib::json::sloppy_parse(
+                    "{\"key\":\"value\", /*fake-value*/ "
+                    "\"key2\":\"real-value\"}")["key2"],
             fostlib::json("real-value"));
     FSL_CHECK_EQ(
             fostlib::json::sloppy_parse("{\"key\":\"value\"}/*test*/")["key"],

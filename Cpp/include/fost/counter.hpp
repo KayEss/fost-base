@@ -75,27 +75,31 @@ namespace fostlib {
             for (std::size_t n = 0; n <= buckets; n++) {
                 new_last = last + width;
                 if (n < buckets) {
-                    samples.push_back(std::make_pair(
-                            new_last,
-                            fostlib::performance{
-                                    perf_module,
-                                    fostlib::jcursor(
-                                            perf_path,
-                                            fostlib::string(
-                                                    std::to_string(last.count())
-                                                    + "_"
-                                                    + std::to_string(
-                                                            new_last.count())))}));
+                    samples.push_back(
+                            std::make_pair(
+                                    new_last,
+                                    fostlib::performance{
+                                            perf_module,
+                                            fostlib::jcursor(
+                                                    perf_path,
+                                                    fostlib::string(
+                                                            std::to_string(
+                                                                    last.count())
+                                                            + "_"
+                                                            + std::to_string(
+                                                                    new_last.count())))}));
                 } else {
-                    samples.push_back(std::make_pair(
-                            new_last,
-                            fostlib::performance{
-                                    perf_module,
-                                    fostlib::jcursor(
-                                            perf_path,
-                                            fostlib::string(
-                                                    std::to_string(last.count())
-                                                    + "_infinite"))}));
+                    samples.push_back(
+                            std::make_pair(
+                                    new_last,
+                                    fostlib::performance{
+                                            perf_module,
+                                            fostlib::jcursor(
+                                                    perf_path,
+                                                    fostlib::string(
+                                                            std::to_string(
+                                                                    last.count())
+                                                            + "_infinite"))}));
                 }
                 last = new_last;
                 width = Duration(

@@ -60,8 +60,9 @@ FSL_TEST_FUNCTION(ripemd256_empty) {
     fostlib::digester ex1(fostlib::ripemd256);
     FSL_CHECK_EQ(
             fostlib::coerce<fostlib::hex_string>(ex1.digest()),
-            fostlib::hex_string("02ba4c4e5f8ecd1877fc52d64d30e37a2d9774fb1e5d02"
-                                "6380ae0168e3c5522d"));
+            fostlib::hex_string(
+                    "02ba4c4e5f8ecd1877fc52d64d30e37a2d9774fb1e5d02"
+                    "6380ae0168e3c5522d"));
 }
 
 

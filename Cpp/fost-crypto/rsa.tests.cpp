@@ -75,8 +75,10 @@ FSL_TEST_FUNCTION(validate_jwt_signature) {
             "J1n3pIWk_dUZegpqx0Lka21H6XxUTxiy8OcaarA8zdnPUnV6AmNP3ecFawIFYdvJB_"
             "cm-GvpCSbr8G8y_Mllj8f4x9nBH8pQux89_"
             "6gUY618iYv7tuPWBFfEbLxtF2pZS6YC1aSfLQxeNe8djT9YjpvRZA";
-    FSL_CHECK(fostlib::rsa::PKCS1v15_SHA256::validate(
-            base64url_jwt, base64url_signature, base64url_n, base64url_e));
+    FSL_CHECK(
+            fostlib::rsa::PKCS1v15_SHA256::validate(
+                    base64url_jwt, base64url_signature, base64url_n,
+                    base64url_e));
 }
 
 

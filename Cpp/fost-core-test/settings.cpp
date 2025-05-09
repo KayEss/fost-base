@@ -10,8 +10,9 @@ FSL_TEST_SUITE(settings);
 FSL_TEST_FUNCTION(load_base_settings_file) {
     try {
         fostlib::ini_file base_settings_file("/etc/fost.conf");
-        FSL_CHECK(fostlib::setting<bool>::value(
-                "Settings database tests", "Loaded base settings file"));
+        FSL_CHECK(
+                fostlib::setting<bool>::value(
+                        "Settings database tests", "Loaded base settings file"));
     } catch (fostlib::exceptions::exception &e) {
         fostlib::insert(
                 e.data(), "resolution",

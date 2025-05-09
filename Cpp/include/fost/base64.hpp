@@ -48,13 +48,15 @@ namespace fostlib {
     };
 
     template<>
-    struct FOST_CORE_DECLSPEC coercer<base64_string, std::vector<unsigned char>> {
+    struct FOST_CORE_DECLSPEC
+            coercer<base64_string, std::vector<unsigned char>> {
         base64_string coerce(const std::vector<unsigned char> &v);
     };
 
     /// Allow coercion from Base 64 strings to byte vectors
     template<>
-    struct FOST_CORE_DECLSPEC coercer<std::vector<unsigned char>, base64_string> {
+    struct FOST_CORE_DECLSPEC
+            coercer<std::vector<unsigned char>, base64_string> {
         std::vector<unsigned char> coerce(const base64_string &v);
     };
 

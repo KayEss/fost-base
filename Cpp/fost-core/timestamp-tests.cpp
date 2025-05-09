@@ -15,8 +15,9 @@ FSL_TEST_FUNCTION(basic) {
     // FSL_CHECK_EQ(iso[1], '0');
     // FSL_CHECK_EQ(iso[4], '-');
 
-    FSL_CHECK_NOTHROW(fostlib::rfc1123_timestamp rfc1123(
-            fostlib::coerce<fostlib::rfc1123_timestamp>(n)));
+    FSL_CHECK_NOTHROW(
+            fostlib::rfc1123_timestamp rfc1123(
+                    fostlib::coerce<fostlib::rfc1123_timestamp>(n)));
 }
 
 

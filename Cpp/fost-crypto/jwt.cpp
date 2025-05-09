@@ -107,9 +107,10 @@ std::string fostlib::jws::sign_base64_string(
     case alg::EdDSA: {
         ed25519::keypair const kp{key};
         auto const b64 = felspar::u8view{header_b64 + "."} + payload_b64;
-        auto const signature = kp.sign(felspar::buffer<const felspar::byte>{
-                reinterpret_cast<unsigned char const *>(b64.data()),
-                b64.bytes()});
+        auto const signature =
+                kp.sign(felspar::buffer<const felspar::byte>{
+                        reinterpret_cast<unsigned char const *>(b64.data()),
+                        b64.bytes()});
         return static_cast<std::string>(b64) + "."
                 + static_cast<std::string>(base64url(signature));
     }

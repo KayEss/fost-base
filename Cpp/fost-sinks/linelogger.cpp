@@ -12,8 +12,9 @@ namespace {
 
       public:
         line_logger(const fostlib::json &conf)
-        : log_level(fostlib::coerce<fostlib::nullable<int>>(conf["log-level"])
-                            .value_or(fostlib::log::error_level_tag::level())),
+        : log_level(
+                  fostlib::coerce<fostlib::nullable<int>>(conf["log-level"])
+                          .value_or(fostlib::log::error_level_tag::level())),
           channel(conf["channel"] == fostlib::json("stderr") ? std::cerr
                                                              : std::cout) {}
         bool operator()(const fostlib::log::message &m) {

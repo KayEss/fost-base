@@ -88,8 +88,9 @@ struct fostlib::log::global_sink_configuration::gsc_impl {
              end(configuration["sinks"].end());
              sink_iter != end; ++sink_iter) {
             typedef sink_registry_type::found_t f_type;
-            f_type found(g_sink_registry().find(
-                    coerce<string>((*sink_iter)["name"])));
+            f_type found(
+                    g_sink_registry().find(
+                            coerce<string>((*sink_iter)["name"])));
             for (f_type::const_iterator s_it(found.begin());
                  s_it != found.end(); ++s_it) {
                 sinks.push_back(
