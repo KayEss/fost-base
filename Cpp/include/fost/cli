@@ -1,3 +1,6 @@
+#pragma once
+
+
 #ifdef FOST_OS_WINDOWS
     #define FOST_CLI_DECLSPEC __declspec( dllimport )
 #else
@@ -7,12 +10,19 @@
 
 #include <fost/log>
 
+#include <iostream>
+
 
 namespace fostlib {
 
 
     void simple_logger(log::message const &, std::size_t log_level,
             bool colour, std::ostream &channel);
+
+    inline bool simple_logging(log::message const &m) {
+        simple_logger(m, 0, true, std::cout);
+        return true;
+    }
 
 
 }
