@@ -69,6 +69,12 @@ namespace fostlib {
         string operator+(string const &v) const {
             return felspar::u8view{*this} + felspar::u8view{v};
         }
+        string operator+(std::string const &v) const {
+            return felspar::u8view{*this} + felspar::u8view{v};
+        }
+        string operator+(std::string_view const v) const {
+            return felspar::u8view{*this} + felspar::u8view{v};
+        }
         string operator+(char32_t) const;
         string operator+(nliteral r) const {
             return felspar::u8view{*this} + felspar::u8view{r, std::strlen(r)};
