@@ -19,8 +19,8 @@ namespace fostlib {
                     const string &section,
                     const string &read,
                     const string &processed,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
 
           protected:
             felspar::u8view message() const noexcept;

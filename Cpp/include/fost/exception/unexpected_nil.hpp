@@ -15,12 +15,12 @@ namespace fostlib {
         class FOST_CORE_DECLSPEC unexpected_nil : public exception {
           public:
             unexpected_nil(
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             unexpected_nil(
                     const string &,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
 
           protected:
             felspar::u8view message() const noexcept;

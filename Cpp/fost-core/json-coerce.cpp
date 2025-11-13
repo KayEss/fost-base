@@ -24,8 +24,7 @@ namespace {
         bool operator()(const json::object_p &o) const { return o->size(); }
     };
 }
-bool fostlib::coercer<bool, json>::coerce(
-        const json &j, felspar::source_location) {
+bool fostlib::coercer<bool, json>::coerce(const json &j, std::source_location) {
     return j.apply_visitor(::as_bool());
 }
 
@@ -35,7 +34,7 @@ bool fostlib::coercer<bool, json>::coerce(
 */
 namespace {
     struct as_int {
-        felspar::source_location loc;
+        std::source_location loc;
         int64_t operator()(std::monostate) const {
             throw fostlib::exceptions::null{
                     "Cannot convert null to a number", loc};
@@ -60,7 +59,7 @@ namespace {
     };
 }
 int64_t fostlib::coercer<int64_t, json>::coerce(
-        const json &j, felspar::source_location loc) {
+        const json &j, std::source_location loc) {
     return j.apply_visitor(::as_int{std::move(loc)});
 }
 
@@ -70,7 +69,7 @@ int64_t fostlib::coercer<int64_t, json>::coerce(
 */
 namespace {
     struct as_double {
-        felspar::source_location loc;
+        std::source_location loc;
         double operator()(std::monostate) const {
             throw fostlib::exceptions::null{
                     "Cannot convert null to double", loc};
@@ -95,7 +94,7 @@ namespace {
     };
 }
 double fostlib::coercer<double, json>::coerce(
-        const json &j, felspar::source_location loc) {
+        const json &j, std::source_location loc) {
     return j.apply_visitor(::as_double{std::move(loc)});
 }
 
@@ -105,7 +104,7 @@ double fostlib::coercer<double, json>::coerce(
 */
 namespace {
     struct as_u8view {
-        felspar::source_location loc;
+        std::source_location loc;
         felspar::u8view operator()(std::monostate) const {
             throw fostlib::exceptions::null{
                     "Cannot convert null to felspar::u8view", loc};
@@ -143,7 +142,7 @@ namespace {
     };
 }
 felspar::u8view fostlib::coercer<felspar::u8view, json>::coerce(
-        const json &j, felspar::source_location loc) {
+        const json &j, std::source_location loc) {
     return j.apply_visitor(::as_u8view{loc});
 }
 namespace {
@@ -174,7 +173,7 @@ nullable<felspar::u8view>
 }
 namespace {
     struct as_string {
-        felspar::source_location loc;
+        std::source_location loc;
         string operator()(std::monostate) const {
             throw fostlib::exceptions::null{
                     "Cannot convert null to string", loc};
@@ -199,7 +198,7 @@ namespace {
     };
 }
 string fostlib::coercer<string, json>::coerce(
-        const json &j, felspar::source_location loc) {
+        const json &j, std::source_location loc) {
     return j.apply_visitor(::as_string{loc});
 }
 

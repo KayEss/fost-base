@@ -16,15 +16,15 @@ namespace fostlib {
           public:
             not_unique(
                     const string &error,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             not_unique(
                     const string &error,
                     const string &context,
                     const string &alternative1,
                     const string &alternative2,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
 
           protected:
             felspar::u8view message() const noexcept;

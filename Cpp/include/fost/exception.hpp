@@ -5,8 +5,6 @@
 #include <fost/json-core.hpp>
 #include <fost/accessors.hpp>
 
-#include <felspar/test/source.hpp>
-
 #include <exception>
 
 
@@ -44,11 +42,11 @@ namespace fostlib {
           protected:
             json m_data;
 
-            exception(felspar::source_location) noexcept;
-            exception(felspar::u8view, felspar::source_location) noexcept;
+            exception(std::source_location) noexcept;
+            exception(felspar::u8view, std::source_location) noexcept;
 
           private:
-            felspar::source_location m_source_location;
+            std::source_location m_source_location;
             mutable felspar::u8string m_what_string;
         };
 

@@ -19,15 +19,15 @@ namespace fostlib {
                     const string &min,
                     const string &max,
                     const string &value,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             out_of_range_string(
                     const string &message,
                     const string &min,
                     const string &max,
                     const string &value,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
 
           protected:
             felspar::u8view message() const noexcept;
@@ -41,8 +41,8 @@ namespace fostlib {
                     const T min,
                     const T max,
                     const U value,
-                    felspar::source_location sl =
-                            felspar::source_location::current()) noexcept
+                    std::source_location sl =
+                            std::source_location::current()) noexcept
             : out_of_range_string{
                       coerce<string>(min), coerce<string>(max),
                       coerce<string>(value), std::move(sl)} {}
@@ -51,8 +51,8 @@ namespace fostlib {
                     const T min,
                     const T max,
                     const U value,
-                    felspar::source_location sl =
-                            felspar::source_location::current()) noexcept
+                    std::source_location sl =
+                            std::source_location::current()) noexcept
             : out_of_range_string{
                       message, coerce<string>(min), coerce<string>(max),
                       coerce<string>(value), std::move(sl)} {}

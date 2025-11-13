@@ -19,15 +19,15 @@ namespace fostlib {
             file_error(
                     const string &message,
                     const string &filename,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             /// Thow an error from an error code
             file_error(
                     string const &message,
                     std::filesystem::path const &,
                     std::error_code,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
 
           protected:
             felspar::u8view message() const noexcept;

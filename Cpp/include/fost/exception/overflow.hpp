@@ -21,21 +21,21 @@ namespace fostlib {
           public:
             overflow(
                     const string &message,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             overflow(
                     const string &message,
                     const string &n,
                     const string &d,
                     const string &m,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             overflow(
                     const string &n,
                     const string &d,
                     const string &m,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
 
           protected:
             felspar::u8view message() const noexcept;
@@ -49,8 +49,8 @@ namespace fostlib {
                     const T n,
                     const T d,
                     const T m,
-                    felspar::source_location sl =
-                            felspar::source_location::current()) noexcept
+                    std::source_location sl =
+                            std::source_location::current()) noexcept
             : overflow<string>{
                       msg, coerce<string>(n), coerce<string>(d),
                       coerce<string>(m), std::move(sl)} {}
@@ -58,8 +58,8 @@ namespace fostlib {
                     const T n,
                     const T d,
                     const T m,
-                    felspar::source_location sl =
-                            felspar::source_location::current()) noexcept
+                    std::source_location sl =
+                            std::source_location::current()) noexcept
             : overflow<string>{
                       coerce<string>(n), coerce<string>(d), coerce<string>(m),
                       std::move(sl)} {}

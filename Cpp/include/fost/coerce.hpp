@@ -5,9 +5,8 @@
 
 #include <fost/null.hpp>
 
-#include <felspar/test/source.hpp>
-
 #include <exception>
+#include <source_location>
 
 
 namespace fostlib {
@@ -32,17 +31,14 @@ namespace fostlib {
     /// source file location or not.
     template<typename T, typename F>
     concept coercion_wants_source = requires(coercer<T, F, void> c) {
-        {
-            c.coerce(
-                    std::declval<F>(), std::declval<felspar::source_location>())
-        };
+        { c.coerce(std::declval<F>(), std::declval<std::source_location>()) };
     };
 
 
     template<typename T, typename F>
-    inline T coerce(
-            F &&f,
-            felspar::source_location loc = felspar::source_location::current()) {
+    inline T
+            coerce(F &&f,
+                   std::source_location loc = std::source_location::current()) {
         using from_type = std::decay_t<F>;
         if constexpr (coercion_wants_source<T, from_type>) {
             return coercer<T, from_type>{}.coerce(
@@ -57,14 +53,12 @@ namespace fostlib {
     template<typename T, typename F>
         requires is_brace_constructible<T, F>
     struct coercer<T, F, void> {
-        T coerce(
-                F const &f,
-                felspar::source_location = felspar::source_location::current()) {
+        T
+                coerce(F const &f,
+                       std::source_location = std::source_location::current()) {
             return T{f};
         }
-        T coerce(
-                F &&f,
-                felspar::source_location = felspar::source_location::current()) {
+        T coerce(F &&f, std::source_location = std::source_location::current()) {
             return T{std::move(f)};
         }
     };

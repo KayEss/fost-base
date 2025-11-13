@@ -130,22 +130,22 @@ namespace fostlib {
         json &
                 insert(json &j,
                        json &&v,
-                       felspar::source_location const & =
-                               felspar::source_location::current()) const;
+                       std::source_location const & =
+                               std::source_location::current()) const;
         template<typename V>
         json &
                 insert(json &j,
                        V &&v,
-                       felspar::source_location const &loc =
-                               felspar::source_location::current()) const {
+                       std::source_location const &loc =
+                               std::source_location::current()) const {
             return insert(j, json{std::forward<V>(v)}, loc);
         }
         template<typename V>
         [[nodiscard]] json
                 insert(json &&j,
                        V &&v,
-                       felspar::source_location const &loc =
-                               felspar::source_location::current()) const {
+                       std::source_location const &loc =
+                               std::source_location::current()) const {
             auto copy{std::move(j)};
             insert(copy, std::forward<V>(v), loc);
             return copy;
@@ -242,7 +242,7 @@ namespace fostlib {
     };
     template<typename T>
     struct coercer<std::optional<T>, json> {
-        std::optional<T> coerce(json const &f, felspar::source_location loc) {
+        std::optional<T> coerce(json const &f, std::source_location loc) {
             if (f.isnull()) {
                 return std::nullopt;
             } else {
@@ -265,7 +265,7 @@ namespace fostlib {
     template<typename T>
     struct coercer<felspar::memory::holding_pen<T>, json> {
         felspar::memory::holding_pen<T>
-                coerce(json const &f, felspar::source_location loc) {
+                coerce(json const &f, std::source_location loc) {
             if (f.isnull()) {
                 return {};
             } else {
@@ -279,7 +279,7 @@ namespace fostlib {
     template<typename T>
         requires std::is_integral_v<T>
     struct coercer<T, fostlib::json> {
-        T coerce(const fostlib::json &j, felspar::source_location loc) {
+        T coerce(const fostlib::json &j, std::source_location loc) {
             try {
                 return fostlib::coerce<T>(fostlib::coerce<int64_t>(j, loc));
             } catch (fostlib::exceptions::exception &e) {
@@ -293,19 +293,19 @@ namespace fostlib {
     };
     template<>
     struct FOST_CORE_DECLSPEC coercer<int64_t, json> {
-        int64_t coerce(const json &j, felspar::source_location);
+        int64_t coerce(const json &j, std::source_location);
     };
 
     /// Bool and json
     template<>
     struct FOST_CORE_DECLSPEC coercer<bool, json> {
-        bool coerce(const json &f, felspar::source_location);
+        bool coerce(const json &f, std::source_location);
     };
 
     /// Allow conversion of JSON to a double
     template<>
     struct FOST_CORE_DECLSPEC coercer<double, json> {
-        double coerce(const json &j, felspar::source_location);
+        double coerce(const json &j, std::source_location);
     };
 
     /// Allow conversion of JSON into strings. Coercion to a felspar::u8view
@@ -314,15 +314,15 @@ namespace fostlib {
     /// then you need to coerce to a fostlib::string.
     template<>
     struct FOST_CORE_DECLSPEC coercer<felspar::u8view, json> {
-        felspar::u8view coerce(json const &, felspar::source_location loc);
+        felspar::u8view coerce(json const &, std::source_location loc);
     };
     template<>
     struct FOST_CORE_DECLSPEC coercer<string, json> {
-        string coerce(const json &f, felspar::source_location loc);
+        string coerce(const json &f, std::source_location loc);
     };
     template<>
     struct coercer<felspar::u8string, json> {
-        felspar::u8string coerce(const json &f, felspar::source_location loc) {
+        felspar::u8string coerce(const json &f, std::source_location loc) {
             return fostlib::coerce<string>(f, loc).u8string_transition();
         }
     };

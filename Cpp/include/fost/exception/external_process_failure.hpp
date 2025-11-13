@@ -15,12 +15,12 @@ namespace fostlib {
         class FOST_CORE_DECLSPEC external_process_failure : public exception {
           public:
             external_process_failure(
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             external_process_failure(
                     const string &message,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
 
           protected:
             felspar::u8view message() const noexcept;

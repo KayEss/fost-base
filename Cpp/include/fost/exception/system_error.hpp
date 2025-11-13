@@ -12,14 +12,12 @@ namespace fostlib::exceptions {
       public:
         system_error(
                 felspar::u8view message,
-                felspar::source_location =
-                        felspar::source_location::current()) noexcept;
+                std::source_location = std::source_location::current()) noexcept;
         system_error(
                 int ev,
                 std::error_category const &,
                 felspar::u8view message,
-                felspar::source_location =
-                        felspar::source_location::current()) noexcept;
+                std::source_location = std::source_location::current()) noexcept;
 
       protected:
         felspar::u8view message() const noexcept;

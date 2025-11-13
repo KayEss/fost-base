@@ -16,7 +16,7 @@ namespace fostlib {
     template<typename T, typename F>
     struct coercer<T, std::optional<F>> {
         template<typename A>
-        auto coerce(A &&f, felspar::source_location loc) {
+        auto coerce(A &&f, std::source_location loc) {
             if (not f) {
                 throw exceptions::null{loc};
             } else {
@@ -27,14 +27,14 @@ namespace fostlib {
     template<typename T, typename F>
     struct coercer<std::optional<T>, F> {
         template<typename A>
-        std::optional<T> coerce(A &&f, felspar::source_location loc) {
+        std::optional<T> coerce(A &&f, std::source_location loc) {
             return fostlib::coerce<T>(std::forward<A>(f), std::move(loc));
         }
     };
     template<typename T, typename F>
     struct coercer<std::optional<T>, std::optional<F>> {
         template<typename A>
-        std::optional<T> coerce(A &&f, felspar::source_location loc) {
+        std::optional<T> coerce(A &&f, std::source_location loc) {
             if (not f) {
                 return std::nullopt;
             } else {
@@ -47,7 +47,7 @@ namespace fostlib {
     template<typename T, typename F>
     struct coercer<T, felspar::memory::holding_pen<F>> {
         template<typename A>
-        auto coerce(A &&f, felspar::source_location loc) {
+        auto coerce(A &&f, std::source_location loc) {
             if (not f) {
                 throw exceptions::null{loc};
             } else {
@@ -58,8 +58,7 @@ namespace fostlib {
     template<typename T, typename F>
     struct coercer<felspar::memory::holding_pen<T>, F> {
         template<typename A>
-        felspar::memory::holding_pen<T>
-                coerce(A &&f, felspar::source_location loc) {
+        felspar::memory::holding_pen<T> coerce(A &&f, std::source_location loc) {
             return fostlib::coerce<T>(std::forward<A>(f), std::move(loc));
         }
     };
@@ -68,8 +67,7 @@ namespace fostlib {
             felspar::memory::holding_pen<T>,
             felspar::memory::holding_pen<F>> {
         template<typename A>
-        felspar::memory::holding_pen<T>
-                coerce(A &&f, felspar::source_location loc) {
+        felspar::memory::holding_pen<T> coerce(A &&f, std::source_location loc) {
             if (not f) {
                 return std::nullopt;
             } else {

@@ -212,7 +212,7 @@ fostlib::json &fostlib::jcursor::push_back(json &j, json &&v) const {
 
 
 fostlib::json &fostlib::jcursor::insert(
-        json &j, json &&v, felspar::source_location const &loc) const {
+        json &j, json &&v, std::source_location const &loc) const {
     if (not j.has_key(*this)) {
         copy_from_root(j) = std::move(v);
     } else {

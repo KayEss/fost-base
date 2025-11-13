@@ -57,8 +57,7 @@ namespace fostlib {
     /// Coerce JSON to a file path
     template<>
     struct coercer<std::filesystem::path, fostlib::json> {
-        std::filesystem::path
-                coerce(const json &j, felspar::source_location loc) {
+        std::filesystem::path coerce(const json &j, std::source_location loc) {
             return fostlib::coerce<std::filesystem::path>(
                     fostlib::coerce<string>(j, loc), loc);
         }

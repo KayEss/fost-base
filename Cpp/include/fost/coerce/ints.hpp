@@ -23,10 +23,8 @@ namespace fostlib {
         using limits_T = std::numeric_limits<T>;
         using limits_F = std::numeric_limits<F>;
 
-        T
-                coerce(F f,
-                       felspar::source_location loc =
-                               felspar::source_location::current()) const {
+        T coerce(F f, std::source_location loc = std::source_location::current())
+                const {
             if constexpr (std::is_same_v<T, bool>) {
                 return f ? true : false;
             } else {

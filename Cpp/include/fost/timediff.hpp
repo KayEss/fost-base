@@ -64,10 +64,9 @@ namespace fostlib {
 
     template<typename R, typename P>
     struct FOST_CORE_DECLSPEC coercer<std::chrono::duration<R, P>, json> {
-        auto
-                coerce(json const &v,
-                       felspar::source_location loc =
-                               felspar::source_location::current()) {
+        auto coerce(
+                json const &v,
+                std::source_location loc = std::source_location::current()) {
             if (v.isatom()) {
                 return std::chrono::duration<R, P>{
                         fostlib::coerce<std::int64_t>(v, loc)};

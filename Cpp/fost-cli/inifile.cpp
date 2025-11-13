@@ -16,7 +16,7 @@ fostlib::exceptions::invalid_ini_line::invalid_ini_line(
         const fostlib::string &section,
         const fostlib::string &read,
         const fostlib::string &processed,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{std::move(sl)} {
     fostlib::insert(data(), "section", section);
     fostlib::insert(data(), "ini-file", read);

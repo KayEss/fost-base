@@ -15,22 +15,22 @@ namespace fostlib {
         class FOST_CORE_DECLSPEC unexpected_eof : public exception {
           public:
             unexpected_eof(
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             unexpected_eof(
                     const string &message,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             unexpected_eof(
                     const string &message,
                     const string &filename,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             unexpected_eof(
                     const string &message,
                     std::error_code,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
 
           protected:
             felspar::u8view message() const noexcept;

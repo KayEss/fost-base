@@ -27,8 +27,7 @@ void fostlib::detail::throw_null_exception() {
 
 
 namespace {
-    void source_description(
-            fostlib::json &js, felspar::source_location const &sl) {
+    void source_description(fostlib::json &js, std::source_location const &sl) {
         fostlib::json::object_t thrown;
         thrown["filename"] = sl.file_name();
         thrown["function"] = sl.function_name();
@@ -37,7 +36,7 @@ namespace {
         insert(js, "source", thrown);
     }
 }
-fostlib::exceptions::exception::exception(felspar::source_location sl) noexcept
+fostlib::exceptions::exception::exception(std::source_location sl) noexcept
 : m_source_location{std::move(sl)} {
     try {
         source_description(m_data, m_source_location);
@@ -46,7 +45,7 @@ fostlib::exceptions::exception::exception(felspar::source_location sl) noexcept
 
 
 fostlib::exceptions::exception::exception(
-        felspar::u8view m, felspar::source_location sl) noexcept
+        felspar::u8view m, std::source_location sl) noexcept
 : m_source_location{std::move(sl)} {
     try {
         source_description(m_data, m_source_location);
@@ -101,7 +100,7 @@ fostlib::json fostlib::exceptions::exception::as_json() const {
 
 #include <fost/exception/cast_fault.hpp>
 fostlib::exceptions::cast_fault::cast_fault(
-        const string &message, felspar::source_location sl) noexcept
+        const string &message, std::source_location sl) noexcept
 : exception{message, std::move(sl)} {}
 felspar::u8view fostlib::exceptions::cast_fault::message() const noexcept {
     return "The requested cast is not possible";
@@ -110,10 +109,10 @@ felspar::u8view fostlib::exceptions::cast_fault::message() const noexcept {
 
 #include <fost/exception/external_process_failure.hpp>
 fostlib::exceptions::external_process_failure::external_process_failure(
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{std::move(sl)} {}
 fostlib::exceptions::external_process_failure::external_process_failure(
-        const string &command, felspar::source_location sl) noexcept
+        const string &command, std::source_location sl) noexcept
 : exception{command, std::move(sl)} {}
 felspar::u8view
         fostlib::exceptions::external_process_failure::message() const noexcept {
@@ -125,7 +124,7 @@ felspar::u8view
 fostlib::exceptions::file_error::file_error(
         const string &message,
         const string &filename,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{message, std::move(sl)} {
     try {
         insert(data(), "filename", filename);
@@ -135,7 +134,7 @@ fostlib::exceptions::file_error::file_error(
         const string &message,
         std::filesystem::path const &file,
         std::error_code error,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{message, std::move(sl)} {
     try {
         insert(data(), "filename", file.string().c_str());
@@ -149,12 +148,12 @@ felspar::u8view fostlib::exceptions::file_error::message() const noexcept {
 
 #include <fost/exception/json_error.hpp>
 fostlib::exceptions::json_error::json_error(
-        const string &message, felspar::source_location sl) noexcept
+        const string &message, std::source_location sl) noexcept
 : exception{message, std::move(sl)} {}
 fostlib::exceptions::json_error::json_error(
         const string &message,
         const json &value,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{message, std::move(sl)} {
     try {
         insert(data(), "value", value);
@@ -169,7 +168,7 @@ felspar::u8view fostlib::exceptions::json_error::message() const noexcept {
 fostlib::exceptions::missing_setting::missing_setting(
         const string &section,
         const string &name,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{std::move(sl)} {
     try {
         insert(data(), "section", section);
@@ -183,12 +182,12 @@ felspar::u8view fostlib::exceptions::missing_setting::message() const noexcept {
 
 #include <fost/exception/not_a_number.hpp>
 fostlib::exceptions::not_a_number::not_a_number(
-        const string &message, felspar::source_location sl) noexcept
+        const string &message, std::source_location sl) noexcept
 : exception{message, std::move(sl)} {}
 fostlib::exceptions::not_a_number::not_a_number(
         const string &message,
         const string &value,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{message, std::move(sl)} {
     try {
         insert(data(), "value", value);
@@ -201,22 +200,20 @@ felspar::u8view fostlib::exceptions::not_a_number::message() const noexcept {
 
 #include <fost/exception/not_implemented.hpp>
 fostlib::exceptions::not_implemented::not_implemented(
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{std::move(sl)} {}
 fostlib::exceptions::not_implemented::not_implemented(
-        const string &mess, felspar::source_location sl) noexcept
+        const string &mess, std::source_location sl) noexcept
 : exception{mess, std::move(sl)} {}
 fostlib::exceptions::not_implemented::not_implemented(
-        const string &mes,
-        const string &extra,
-        felspar::source_location sl) noexcept
+        const string &mes, const string &extra, std::source_location sl) noexcept
 : exception{mes, std::move(sl)} {
     try {
         insert(data(), "detail", extra);
     } catch (...) { absorb_exception(); }
 }
 fostlib::exceptions::not_implemented::not_implemented(
-        const string &mes, const json &extra, felspar::source_location sl)
+        const string &mes, const json &extra, std::source_location sl)
 : exception{mes, std::move(sl)} {
     insert(data(), "detail", extra);
 }
@@ -226,15 +223,13 @@ felspar::u8view fostlib::exceptions::not_implemented::message() const noexcept {
 
 
 #include <fost/exception/not_null.hpp>
-fostlib::exceptions::not_null::not_null(felspar::source_location sl) noexcept
+fostlib::exceptions::not_null::not_null(std::source_location sl) noexcept
 : exception{std::move(sl)} {}
 fostlib::exceptions::not_null::not_null(
-        const string &mes, felspar::source_location sl) noexcept
+        const string &mes, std::source_location sl) noexcept
 : exception{mes, std::move(sl)} {}
 fostlib::exceptions::not_null::not_null(
-        const string &mes,
-        const string &inf,
-        felspar::source_location sl) noexcept
+        const string &mes, const string &inf, std::source_location sl) noexcept
 : exception{mes, std::move(sl)} {
     try {
         insert(data(), "info", inf);
@@ -247,14 +242,14 @@ felspar::u8view fostlib::exceptions::not_null::message() const noexcept {
 
 #include <fost/exception/not_unique.hpp>
 fostlib::exceptions::not_unique::not_unique(
-        const string &message, felspar::source_location sl) noexcept
+        const string &message, std::source_location sl) noexcept
 : exception{message, std::move(sl)} {}
 fostlib::exceptions::not_unique::not_unique(
         const string &error,
         const string &context,
         const string &alternative1,
         const string &alternative2,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{error, std::move(sl)} {
     try {
         insert(data(), "context", context);
@@ -268,15 +263,13 @@ felspar::u8view fostlib::exceptions::not_unique::message() const noexcept {
 
 
 #include <fost/exception/null.hpp>
-fostlib::exceptions::null::null(felspar::source_location sl) noexcept
+fostlib::exceptions::null::null(std::source_location sl) noexcept
 : exception{std::move(sl)} {}
 fostlib::exceptions::null::null(
-        const string &mes, felspar::source_location sl) noexcept
+        const string &mes, std::source_location sl) noexcept
 : exception{mes, std::move(sl)} {}
 fostlib::exceptions::null::null(
-        const string &mes,
-        const string &inf,
-        felspar::source_location sl) noexcept
+        const string &mes, const string &inf, std::source_location sl) noexcept
 : exception{mes, std::move(sl)} {
     try {
         insert(data(), "info", inf);
@@ -292,7 +285,7 @@ fostlib::exceptions::out_of_range_string::out_of_range_string(
         const string &mn,
         const string &mx,
         const string &v,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{std::move(sl)} {
     try {
         insert(data(), "value", v);
@@ -305,7 +298,7 @@ fostlib::exceptions::out_of_range_string::out_of_range_string(
         const string &mn,
         const string &mx,
         const string &v,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{mes, std::move(sl)} {
     try {
         insert(data(), "value", v);
@@ -321,14 +314,14 @@ felspar::u8view
 
 #include <fost/exception/overflow.hpp>
 fostlib::exceptions::overflow<fostlib::string>::overflow(
-        const string &message, felspar::source_location sl) noexcept
+        const string &message, std::source_location sl) noexcept
 : exception{message, std::move(sl)} {}
 fostlib::exceptions::overflow<fostlib::string>::overflow(
         const string &message,
         const string &n,
         const string &d,
         const string &m,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{message, std::move(sl)} {
     try {
         insert(data(), "numerator", n);
@@ -340,7 +333,7 @@ fostlib::exceptions::overflow<fostlib::string>::overflow(
         const string &n,
         const string &d,
         const string &m,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{std::move(sl)} {
     try {
         insert(data(), "numerator", n);
@@ -356,12 +349,12 @@ felspar::u8view fostlib::exceptions::overflow<fostlib::string>::message()
 
 #include <fost/exception/parse_error.hpp>
 fostlib::exceptions::parse_error::parse_error(
-        const string &message, felspar::source_location sl) noexcept
+        const string &message, std::source_location sl) noexcept
 : exception{message, std::move(sl)} {}
 fostlib::exceptions::parse_error::parse_error(
         const string &message,
         const string &value,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{message, std::move(sl)} {
     try {
         insert(data(), "value", value);
@@ -371,7 +364,7 @@ fostlib::exceptions::parse_error::parse_error(
         string const &message,
         std::size_t line,
         std::size_t col,
-        felspar::source_location sl)
+        std::source_location sl)
 : exception{message, std::move(sl)} {
     try {
         insert(data(), "pos", "line", line);
@@ -383,7 +376,7 @@ fostlib::exceptions::parse_error::parse_error(
         std::filesystem::path const &fn,
         std::size_t line,
         std::size_t col,
-        felspar::source_location sl)
+        std::source_location sl)
 : exception{message, std::move(sl)} {
     try {
         insert(data(), "filename", fn);
@@ -403,7 +396,7 @@ fostlib::exceptions::settings_fault::settings_fault(
         const string &section,
         const string &name,
         const string &value,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{error, std::move(sl)} {
     insert(data(), "domain", domain);
     insert(data(), "section", section);
@@ -417,13 +410,13 @@ felspar::u8view fostlib::exceptions::settings_fault::message() const noexcept {
 
 #include <fost/exception/system_error.hpp>
 fostlib::exceptions::system_error::system_error(
-        felspar::u8view message, felspar::source_location loc) noexcept
+        felspar::u8view message, std::source_location loc) noexcept
 : exception{message, std::move(loc)} {}
 fostlib::exceptions::system_error::system_error(
         int ev,
         std::error_category const &cat,
         felspar::u8view message,
-        felspar::source_location loc) noexcept
+        std::source_location loc) noexcept
 : exception{message, std::move(loc)} {
     insert(data(), "error", "code", ev);
     auto condition = cat.default_error_condition(ev);
@@ -436,13 +429,13 @@ felspar::u8view fostlib::exceptions::system_error::message() const noexcept {
 
 #include <fost/exception/unexpected_eof.hpp>
 fostlib::exceptions::unexpected_eof::unexpected_eof(
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{std::move(sl)} {}
 fostlib::exceptions::unexpected_eof::unexpected_eof(
-        const string &msg, felspar::source_location sl) noexcept
+        const string &msg, std::source_location sl) noexcept
 : exception{msg, std::move(sl)} {}
 fostlib::exceptions::unexpected_eof::unexpected_eof(
-        const string &msg, const string &f, felspar::source_location sl) noexcept
+        const string &msg, const string &f, std::source_location sl) noexcept
 : exception{msg, std::move(sl)} {
     try {
         insert(data(), "filename", f);
@@ -451,7 +444,7 @@ fostlib::exceptions::unexpected_eof::unexpected_eof(
 fostlib::exceptions::unexpected_eof::unexpected_eof(
         const string &msg,
         std::error_code error,
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{msg, std::move(sl)} {
     try {
         insert(data(), "error", error);
@@ -464,10 +457,10 @@ felspar::u8view fostlib::exceptions::unexpected_eof::message() const noexcept {
 
 #include <fost/exception/unexpected_nil.hpp>
 fostlib::exceptions::unexpected_nil::unexpected_nil(
-        felspar::source_location sl) noexcept
+        std::source_location sl) noexcept
 : exception{std::move(sl)} {}
 fostlib::exceptions::unexpected_nil::unexpected_nil(
-        const string &e, felspar::source_location sl) noexcept
+        const string &e, std::source_location sl) noexcept
 : exception{e, std::move(sl)} {}
 felspar::u8view fostlib::exceptions::unexpected_nil::message() const noexcept {
     return "Unexpected zero when processing Unicode stream";
@@ -476,7 +469,7 @@ felspar::u8view fostlib::exceptions::unexpected_nil::message() const noexcept {
 
 #include <fost/exception/unicode_encoding.hpp>
 fostlib::exceptions::unicode_encoding::unicode_encoding(
-        const string &e, felspar::source_location sl) noexcept
+        const string &e, std::source_location sl) noexcept
 : exception{e, std::move(sl)} {}
 felspar::u8view fostlib::exceptions::unicode_encoding::message() const noexcept {
     return "Unicode encoding and decoding";

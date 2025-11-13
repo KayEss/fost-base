@@ -16,26 +16,24 @@ namespace fostlib {
           public:
             parse_error(
                     string const &message,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             parse_error(
                     string const &,
                     const string &value,
-                    felspar::source_location =
-                            felspar::source_location::current()) noexcept;
+                    std::source_location =
+                            std::source_location::current()) noexcept;
             parse_error(
                     string const &,
                     std::size_t line,
                     std::size_t col,
-                    felspar::source_location =
-                            felspar::source_location::current());
+                    std::source_location = std::source_location::current());
             parse_error(
                     string const &,
                     std::filesystem::path const &filename,
                     std::size_t line,
                     std::size_t col,
-                    felspar::source_location =
-                            felspar::source_location::current());
+                    std::source_location = std::source_location::current());
 
           protected:
             felspar::u8view message() const noexcept;
