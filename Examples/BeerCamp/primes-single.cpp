@@ -1,10 +1,3 @@
-/**
-    Copyright 2009-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
 #include <fost/cli>
 #include <fost/main.hpp>
 #include <numeric>
@@ -62,7 +55,7 @@ namespace {
 }
 
 
-FSL_MAIN("primes", "Primes\nCopyright (C) 2009-2020 Red Anchor Trading Co. Ltd.")
+FSL_MAIN("primes", "Primes")
 (fostlib::ostream &out, fostlib::arguments &args) {
     std::list<prime_sequence> seqs;
     for (std::size_t c(1); c != args.size(); ++c)

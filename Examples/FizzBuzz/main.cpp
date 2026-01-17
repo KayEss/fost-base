@@ -1,11 +1,3 @@
-/**
-    Copyright 2008-2020 Red Anchor Trading Co. Ltd.
-
-    Distributed under the Boost Software License, Version 1.0.
-    See <http://www.boost.org/LICENSE_1_0.txt>
- */
-
-
 #include <fost/cli>
 #include <fost/main>
 
@@ -21,8 +13,7 @@ namespace {
 
 FSL_MAIN(
         "FizzBuzz",
-        "FizzBuzz\n"
-        "Copyright (c) 2008-2020 Red Anchor Trading Co. Ltd.")
+        "FizzBuzz")
 (fostlib::ostream &out, fostlib::arguments &args) {
     // Where we can store any numeric setting we're given
     std::unique_ptr<fostlib::setting<int>> count;
