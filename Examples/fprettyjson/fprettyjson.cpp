@@ -16,9 +16,7 @@ namespace {
 }
 
 
-FSL_MAIN(
-        "fprettyjson",
-        "JSON pretty printer")
+FSL_MAIN("fprettyjson", "JSON pretty printer")
 (fostlib::ostream &out, fostlib::arguments &args) {
     /**
         Process the extra command line switches we want

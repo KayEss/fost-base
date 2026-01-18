@@ -11,9 +11,7 @@ namespace {
 }
 
 
-FSL_MAIN(
-        "FizzBuzz",
-        "FizzBuzz")
+FSL_MAIN("FizzBuzz", "FizzBuzz")
 (fostlib::ostream &out, fostlib::arguments &args) {
     // Where we can store any numeric setting we're given
     std::unique_ptr<fostlib::setting<int>> count;
