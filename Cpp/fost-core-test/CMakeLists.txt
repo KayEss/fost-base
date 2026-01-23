@@ -1,7 +1,9 @@
-add_library(fost-core-test
-        fost-core-test.cpp
-    )
-target_link_libraries(fost-core-test PUBLIC fost-cli)
+if(TARGET check)
+    add_library(fost-core-test
+            fost-core-test.cpp
+        )
+    target_link_libraries(fost-core-test PUBLIC fost-cli)
+endif()
 
 
 if(TARGET stress)
