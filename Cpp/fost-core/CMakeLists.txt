@@ -30,18 +30,12 @@ add_library(fost-core
         unicode.cpp
     )
 target_include_directories(fost-core PUBLIC ../include)
-if(NOT TARGET boost)
-    find_package(Boost 1.62.0)
-    find_package(Threads REQUIRED)
-    target_include_directories(fost-core PUBLIC ${Boost_INCLUDE_DIRS})
-else()
-    target_link_libraries(fost-core boost)
-endif()
 target_compile_options(fost-core PUBLIC -fdiagnostics-color)
 if("${toolset}" STREQUAL "gcc")
     target_compile_options(fost-core PUBLIC -Wno-deprecated-declarations)
 endif()
 target_link_libraries(fost-core ${CMAKE_THREAD_LIBS_INIT} dl
+    Boost::date_time Boost::filesystem Boost::spirit Boost::system Boost::uuid
     felspar-cord felspar-test felspar-threading)
 install(TARGETS fost-core LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 install(DIRECTORY ../include/fost DESTINATION include)
