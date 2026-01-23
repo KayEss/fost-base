@@ -7,7 +7,7 @@
 #include <fost/unicode.hpp>
 #include <fost/parse/parse.hpp>
 
-#include <boost/spirit/include/phoenix.hpp>
+#include <boost/phoenix.hpp>
 #include <boost/spirit/include/qi_eps.hpp>
 #include <boost/fusion/include/std_pair.hpp>
 

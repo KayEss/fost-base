@@ -10,7 +10,7 @@
 #define BOOST_SPIRIT_USE_PHOENIX_V3
 
 #include <boost/spirit/include/qi_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/phoenix/operator.hpp>
 
 #include <fost/tagged-string.hpp>
 
