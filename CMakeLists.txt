@@ -11,4 +11,6 @@ if(TARGET stress)
 endif()
 
 add_subdirectory(Cpp)
-add_subdirectory(Examples)
+if(TARGET examples)
+    add_subdirectory(Examples)
+endif()
