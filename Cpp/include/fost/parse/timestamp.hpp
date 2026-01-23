@@ -3,7 +3,7 @@
 
 #include <fost/parse/parse.hpp>
 
-#include <boost/spirit/include/phoenix.hpp>
+#include <boost/phoenix.hpp>
 
 
 namespace fostlib {
