@@ -10,8 +10,6 @@
 
 #include <fost/insert.hpp>
 
-#include <boost/version.hpp>
-
 
 using namespace fostlib;
 
