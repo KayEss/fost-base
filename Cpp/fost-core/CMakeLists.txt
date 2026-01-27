@@ -35,7 +35,7 @@ if("${toolset}" STREQUAL "gcc")
     target_compile_options(fost-core PUBLIC -Wno-deprecated-declarations)
 endif()
 target_link_libraries(fost-core ${CMAKE_THREAD_LIBS_INIT} dl
-    Boost::date_time Boost::filesystem Boost::spirit Boost::system Boost::uuid
+    Boost::date_time Boost::spirit Boost::system Boost::uuid
     felspar-cord felspar-test felspar-threading)
 install(TARGETS fost-core LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
 install(DIRECTORY ../include/fost DESTINATION include)
