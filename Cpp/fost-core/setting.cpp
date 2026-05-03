@@ -40,21 +40,17 @@ namespace {
 
     inline
 #ifdef WRITELOCKONLY
-            t_settings &
-            g_writeSettings(std::lock_guard<std::mutex> &) {
+            t_settings &g_writeSettings(std::lock_guard<std::mutex> &) {
 #else
-            t_settings &
-            g_writeSettings(ExclusiveWrite::WriteLock &) {
+            t_settings &g_writeSettings(ExclusiveWrite::WriteLock &) {
 #endif
         return g_settingsSettings();
     }
     inline
 #ifdef WRITELOCKONLY
-            const t_settings &
-            g_readSettings(std::lock_guard<std::mutex> &) {
+            const t_settings &g_readSettings(std::lock_guard<std::mutex> &) {
 #else
-            const t_settings &
-            g_readSettings(ExclusiveWrite::ReadLock &) {
+            const t_settings &g_readSettings(ExclusiveWrite::ReadLock &) {
 #endif
         return g_settingsSettings();
     }
